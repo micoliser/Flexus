@@ -1,0 +1,8 @@
+.products.hero-section {
+  background:
+    linear-gradient(rgba(60, 35, 15, 0.75), rgba(92, 51, 23, 0.7)),
+    url("../images/products-top-bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

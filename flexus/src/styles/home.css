@@ -1,0 +1,100 @@
+/* Hero Section Background */
+.home.hero-section {
+  background:
+    linear-gradient(rgba(0, 108, 67, 0.75), rgba(62, 109, 9, 0.7)),
+    url("../images/home-top-bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* About Section */
+.about-section {
+  background-color: transparent;
+}
+
+.about-panel {
+  background-color: transparent;
+  min-height: 320px;
+  box-shadow: 0 4px 15px rgba(0, 108, 67, 0.1);
+}
+
+.about-content {
+  max-width: 72%;
+  position: relative;
+  z-index: 2;
+}
+
+.text-brand-dark {
+  color: #006c43;
+}
+
+.text-brand-light {
+  color: #80b940;
+}
+
+.about-panel-image {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 25%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Why Choose Us Section */
+.why-choose-section {
+  background-color: #006c43;
+}
+
+.why-choose-item {
+  padding: 2rem 1rem;
+}
+
+.why-choose-item i {
+  color: #80b940;
+}
+
+/* Products section */
+.products-section .card {
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.products-section .card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 108, 67, 0.2);
+}
+
+.products-section .card-img {
+  height: 200px;
+  object-fit: cover;
+}
+
+.products-section a {
+  color: #006c43;
+}
+
+.products-section a:hover {
+  color: #80b940;
+  text-decoration: none;
+}
+
+/* CTA Section */
+
+.cta-section .btn-light {
+  background-color: #006c43;
+  font-weight: 600;
+  transition: transform 0.3s ease;
+}
+
+.cta-section .btn-light:hover {
+  transform: scale(1.03);
+}
+
+@media (max-width: 991.98px) {
+  .about-content {
+    max-width: 100%;
+  }
+}
