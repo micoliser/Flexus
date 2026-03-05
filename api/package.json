@@ -1,0 +1,22 @@
+{
+  "name": "flexus-api",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Samuel Iwelumo",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "form-data": "^4.0.5",
+    "mailgun.js": "^12.7.0",
+    "morgan": "^1.10.1"
+  }
+}
