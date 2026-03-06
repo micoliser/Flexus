@@ -64,7 +64,7 @@
 
 .products-section .card:hover {
   transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 108, 67, 0.2);
+  box-shadow: 0 12px 30px rgba(0, 108, 67, 0.15) !important;
 }
 
 .products-section .card-img {

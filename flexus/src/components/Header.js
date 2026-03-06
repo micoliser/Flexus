@@ -20,9 +20,9 @@ const Header = () => {
         <div className="container">
           <NavLink className="navbar-brand" to="/">
             <img
-              src={require("../images/flexus-logo.png")}
+              src={require("../images/flexus-logo-dark.png")}
               alt="flexus logo"
-              className="logo-img"
+              className="header-img logo-img"
             />
           </NavLink>
 
@@ -30,6 +30,14 @@ const Header = () => {
             <li className="nav-item">
               <NavLink to="/" className="nav-link text-white fw-medium px-3">
                 Home
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink
+                to="/about"
+                className="nav-link text-white fw-medium px-3"
+              >
+                About
               </NavLink>
             </li>
             <li className="nav-item">
@@ -92,6 +100,21 @@ const Header = () => {
                 >
                   <i className="bi bi-house me-3 fs-4"></i>
                   Home
+                </NavLink>
+              </li>
+
+              <li className="nav-item px-3">
+                <NavLink
+                  to="/about"
+                  onClick={closeSidebar}
+                  className={({ isActive }) =>
+                    `nav-link px-3 py-3 fs-5 d-flex align-items-center ${
+                      isActive ? "mobile-active-link" : ""
+                    }`
+                  }
+                >
+                  <i className="bi bi-info-circle me-3 fs-4"></i>
+                  About
                 </NavLink>
               </li>
 

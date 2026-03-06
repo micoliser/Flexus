@@ -6,10 +6,25 @@ body {
 }
 
 /* Logo Styling */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.header-img {
+  filter: drop-shadow(0 2px 2px rgba(238, 231, 231, 0.7));
+  transition: all 0.3s ease;
+}
+
 .logo-img {
-  height: 80px;
-  width: auto;
-  object-fit: contain;
+  width: 247px;
+  object-fit: fill;
+}
+
+/* Remove shadow from mobile sidebar logo */
+.mobile-sidebar-header .logo-img {
+  filter: none;
 }
 
 /* Navbar */

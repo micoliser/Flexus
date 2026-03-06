@@ -8,7 +8,7 @@ const Footer = () => {
           <div className="col-12 col-md-4">
             <Link className="navbar-brand" to="/">
               <img
-                src={require("../images/flexus-logo.png")}
+                src={require("../images/flexus-logo-dark.png")}
                 alt="flexus logo"
                 className="logo-img"
               />
