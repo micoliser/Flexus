@@ -3,24 +3,48 @@ import { useState, useEffect } from "react";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   // Lock body scroll when sidebar is open
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "auto";
   }, [isOpen]);
 
+  // Handle scroll event
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const navElement = document.getElementsByClassName("navbar-header")[0];
+      if (scrollPosition > 150 && scrollPosition < 500) {
+        navElement.style.display = "none";
+      } else {
+        navElement.style.display = "block";
+      }
+      setIsScrolled(scrollPosition > 500);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const closeSidebar = () => setIsOpen(false);
 
   return (
     <header
-      className="position-absolute top-0 start-0 end-0 w-100"
+      className={`navbar-header ${isScrolled ? "scrolled" : ""}`}
       style={{ zIndex: 1000 }}
     >
-      <nav className="navbar navbar-expand-lg navbar-dark bg-transparent py-3">
-        <div className="container">
+      <nav
+        className={`navbar navbar-expand-lg py-3 ${isScrolled ? "navbar-light" : "navbar-dark bg-transparent"}`}
+      >
+        <div className="container mx-auto">
           <NavLink className="navbar-brand" to="/">
             <img
-              src={require("../images/flexus-logo-dark.png")}
+              src={
+                isScrolled
+                  ? require("../images/flexus-logo.png")
+                  : require("../images/flexus-logo-dark.png")
+              }
               alt="flexus logo"
               className="header-img logo-img"
             />
@@ -28,14 +52,17 @@ const Header = () => {
 
           <ul className="navbar-nav ms-auto d-none d-lg-flex">
             <li className="nav-item">
-              <NavLink to="/" className="nav-link text-white fw-medium px-3">
+              <NavLink
+                to="/"
+                className={`nav-link fw-medium px-3 ${isScrolled ? "text-dark" : "text-white"}`}
+              >
                 Home
               </NavLink>
             </li>
             <li className="nav-item">
               <NavLink
                 to="/about"
-                className="nav-link text-white fw-medium px-3"
+                className={`nav-link fw-medium px-3 ${isScrolled ? "text-dark" : "text-white"}`}
               >
                 About
               </NavLink>
@@ -43,7 +70,7 @@ const Header = () => {
             <li className="nav-item">
               <NavLink
                 to="/products"
-                className="nav-link text-white fw-medium px-3"
+                className={`nav-link fw-medium px-3 ${isScrolled ? "text-dark" : "text-white"}`}
               >
                 Products
               </NavLink>
@@ -51,7 +78,7 @@ const Header = () => {
             <li className="nav-item">
               <NavLink
                 to="/contact"
-                className="nav-link text-white fw-medium px-3"
+                className={`nav-link fw-medium px-3 ${isScrolled ? "text-dark" : "text-white"}`}
               >
                 Contact
               </NavLink>
@@ -59,7 +86,7 @@ const Header = () => {
           </ul>
 
           <button
-            className="navbar-toggler border-white border-opacity-50 d-lg-none"
+            className={`navbar-toggler d-lg-none ${isScrolled ? "border-dark" : "border-white border-opacity-50"}`}
             onClick={() => setIsOpen(true)}
           >
             <span className="navbar-toggler-icon"></span>
