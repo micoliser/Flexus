@@ -35,7 +35,7 @@ const Header = () => {
       style={{ zIndex: 1000 }}
     >
       <nav
-        className={`navbar navbar-expand-lg py-3 ${isScrolled ? "navbar-light" : "navbar-dark bg-transparent"}`}
+        className={`navbar navbar-expand-lg py-0 ${isScrolled ? "navbar-light" : "navbar-dark bg-transparent"}`}
       >
         <div className="container mx-auto">
           <NavLink className="navbar-brand" to="/">
