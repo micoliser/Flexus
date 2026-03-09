@@ -1,11 +1,14 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useTheme } from "../context/ThemeContext";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const isProductDetailsPage = /^\/products\/[^/]+$/.test(location.pathname);
+  const { isDarkMode, toggleTheme } = useTheme();
+  const isHeaderSolid = isScrolled || isProductDetailsPage;
 
   // Lock body scroll when sidebar is open
   useEffect(() => {
@@ -47,17 +50,17 @@ const Header = () => {
 
   return (
     <header
-      className={`navbar-header ${isScrolled || isProductDetailsPage ? "scrolled" : ""}`}
+      className={`navbar-header ${isHeaderSolid ? "scrolled" : ""}`}
       style={{ zIndex: 1000 }}
     >
       <nav
-        className={`navbar navbar-expand-lg py-0 ${isScrolled || isProductDetailsPage ? "navbar-light" : "navbar-dark bg-transparent"}`}
+        className={`navbar navbar-expand-lg py-0 ${isHeaderSolid ? (isDarkMode ? "navbar-dark" : "navbar-light") : "navbar-dark bg-transparent"}`}
       >
         <div className="container mx-auto">
           <NavLink className="navbar-brand" to="/">
             <img
               src={
-                isScrolled || isProductDetailsPage
+                isHeaderSolid && !isDarkMode
                   ? require("../images/flexus-logo.png")
                   : require("../images/flexus-logo-dark.png")
               }
@@ -70,7 +73,7 @@ const Header = () => {
             <li className="nav-item">
               <NavLink
                 to="/"
-                className={`nav-link fw-medium px-3 ${isScrolled || isProductDetailsPage ? "text-dark" : "text-white"}`}
+                className={`nav-link fw-medium px-3 ${isHeaderSolid ? "text-dark" : "text-white"}`}
               >
                 Home
               </NavLink>
@@ -78,7 +81,7 @@ const Header = () => {
             <li className="nav-item">
               <NavLink
                 to="/about"
-                className={`nav-link fw-medium px-3 ${isScrolled || isProductDetailsPage ? "text-dark" : "text-white"}`}
+                className={`nav-link fw-medium px-3 ${isHeaderSolid ? "text-dark" : "text-white"}`}
               >
                 About
               </NavLink>
@@ -86,7 +89,7 @@ const Header = () => {
             <li className="nav-item">
               <NavLink
                 to="/products"
-                className={`nav-link fw-medium px-3 ${isScrolled || isProductDetailsPage ? "text-dark" : "text-white"}`}
+                className={`nav-link fw-medium px-3 ${isHeaderSolid ? "text-dark" : "text-white"}`}
               >
                 Products
               </NavLink>
@@ -94,15 +97,30 @@ const Header = () => {
             <li className="nav-item">
               <NavLink
                 to="/contact"
-                className={`nav-link fw-medium px-3 ${isScrolled || isProductDetailsPage ? "text-dark" : "text-white"}`}
+                className={`nav-link fw-medium px-3 ${isHeaderSolid ? "text-dark" : "text-white"}`}
               >
                 Contact
               </NavLink>
             </li>
+            <li className="nav-item d-flex align-items-center">
+              <button
+                type="button"
+                className={`btn btn-link nav-link px-3 ${isHeaderSolid ? "text-dark" : "text-white"}`}
+                onClick={toggleTheme}
+                aria-label={
+                  isDarkMode ? "Switch to light mode" : "Switch to dark mode"
+                }
+                title={isDarkMode ? "Light mode" : "Dark mode"}
+              >
+                <i
+                  className={`bi ${isDarkMode ? "bi-sun-fill" : "bi-moon-fill"} fs-5`}
+                ></i>
+              </button>
+            </li>
           </ul>
 
           <button
-            className={`navbar-toggler d-lg-none ${isScrolled || isProductDetailsPage ? "border-dark" : "border-white border-opacity-50"}`}
+            className={`navbar-toggler d-lg-none ${isHeaderSolid ? (isDarkMode ? "border-light" : "border-dark") : "border-white border-opacity-50"}`}
             onClick={() => setIsOpen(true)}
           >
             <span className="navbar-toggler-icon"></span>
@@ -120,7 +138,11 @@ const Header = () => {
           <div className="mobile-sidebar-header d-flex align-items-center justify-content-between px-2 py-3 border-bottom">
             <NavLink to="/" onClick={closeSidebar}>
               <img
-                src={require("../images/flexus-logo.png")}
+                src={
+                  isDarkMode
+                    ? require("../images/flexus-logo-dark.png")
+                    : require("../images/flexus-logo.png")
+                }
                 alt="flexus logo"
                 className="logo-img"
               />
@@ -189,6 +211,21 @@ const Header = () => {
                   <i className="bi bi-envelope me-3 fs-4"></i>
                   Contact
                 </NavLink>
+              </li>
+              <li className="nav-item px-3 mt-2 border-top pt-3">
+                <button
+                  type="button"
+                  className="nav-link px-3 py-3 fs-5 d-flex align-items-center w-100 text-start btn btn-link text-decoration-none text-dark"
+                  onClick={toggleTheme}
+                  aria-label={
+                    isDarkMode ? "Switch to light mode" : "Switch to dark mode"
+                  }
+                >
+                  <i
+                    className={`bi ${isDarkMode ? "bi-sun-fill" : "bi-moon-fill"} me-3 fs-4`}
+                  ></i>
+                  {isDarkMode ? "Light Mode" : "Dark Mode"}
+                </button>
               </li>
             </ul>
           </div>

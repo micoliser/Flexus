@@ -42,7 +42,7 @@ const Products = () => {
       </section>
 
       <section
-        className="cta-section py-5 text-center bg-light"
+        className="cta-section py-5 text-center"
         data-aos="fade-up"
         data-aos-duration="800"
       >

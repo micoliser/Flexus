@@ -114,7 +114,7 @@ const About = () => {
 
       {/* Values Section */}
       <section
-        className="py-5 values-section bg-light"
+        className="py-5 values-section"
         data-aos="fade-up"
         data-aos-duration="800"
       >

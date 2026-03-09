@@ -12,6 +12,7 @@
 /* About Content Section */
 .about-content-section {
   background-color: #fff;
+  overflow-x: hidden;
 }
 
 .about-image-placeholder {
@@ -25,24 +26,25 @@
 /* Values Section */
 .values-section {
   background-color: #f9fafb;
+  overflow-x: hidden;
 }
 
-.card-r {
+.values-section .card-r {
   border: none;
   transition: all 0.3s ease;
   text-align: center;
 }
 
-.card-r:hover {
+.values-section .card-r:hover {
   transform: translateY(-8px);
   box-shadow: 0 12px 30px rgba(0, 108, 67, 0.15) !important;
 }
 
-.card-r i {
+.values-section .card-r i {
   transition: all 0.3s ease;
 }
 
-.card-r:hover i {
+.values-section .card-r:hover i {
   transform: scale(1.1);
 }
 
@@ -99,10 +101,11 @@
   position: relative;
   padding: 2rem 0;
   min-height: 550px;
+  overflow: hidden;
 }
 
 .team-carousel-container {
-  overflow: visible;
+  overflow: hidden;
   position: relative;
   display: flex;
   justify-content: center;
@@ -259,6 +262,52 @@
   background-color: #006c43;
 }
 
+/* About Page Dark Mode (buttons unchanged) */
+.dark-mode .about-content-section {
+  background-color: #212529;
+}
+
+.dark-mode .values-section {
+  background-color: #2d3033;
+}
+
+.dark-mode .team-section {
+  background-color: #212529;
+}
+
+.dark-mode .about-content-section h2,
+.dark-mode .values-section h2,
+.dark-mode .team-section h2,
+.dark-mode .values-section h4 {
+  color: #f8f9fa !important;
+}
+
+.dark-mode .about-content-section .text-muted,
+.dark-mode .values-section .text-muted {
+  color: #ced4da !important;
+}
+
+.dark-mode .about-image-placeholder {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+}
+
+.dark-mode .values-section .card-r {
+  background-color: #2d3033 !important;
+  border: 1px solid #3d4044;
+}
+
+.dark-mode .values-section .card-r:hover {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35) !important;
+}
+
+.dark-mode .indicator-dot {
+  background-color: #6c757d;
+}
+
+.dark-mode .indicator-dot:hover {
+  background-color: #8a9198;
+}
+
 /* Responsive */
 @media (max-width: 991.98px) {
   .about.hero-section {
@@ -326,7 +375,7 @@
     font-size: 1.8rem;
   }
 
-  .card-r {
+  .values-section .card-r {
     padding: 2rem 1rem !important;
   }
 
@@ -398,7 +447,7 @@
     font-size: 1.8rem;
   }
 
-  .card-r {
+  .values-section .card-r {
     padding: 2rem 1rem !important;
   }
 

@@ -98,3 +98,58 @@
     max-width: 100%;
   }
 }
+
+/* Home Dark Mode (buttons intentionally unchanged) */
+.dark-mode .about-section {
+  background-color: #212529;
+}
+
+.dark-mode .about-panel {
+  background-color: #2d3033;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.28);
+}
+
+.dark-mode .about-section h2,
+.dark-mode .products-section h1,
+.dark-mode .cta-section h2 {
+  color: #f1f3f5;
+}
+
+.dark-mode .about-section .text-muted,
+.dark-mode .products-section .text-muted {
+  color: #ced4da !important;
+}
+
+.dark-mode .about-section hr {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .about-section li span {
+  color: #e9ecef;
+}
+
+.dark-mode .why-choose-section {
+  background-color: #006c43;
+}
+
+.dark-mode .products-section {
+  background-color: #212529;
+}
+
+.dark-mode .products-section .card {
+  background-color: #2d3033;
+  border-color: #3d4044;
+}
+
+.dark-mode .products-section .card-title,
+.dark-mode .products-section .card-text {
+  color: #e9ecef;
+}
+
+.dark-mode .products-section a {
+  color: #80b940;
+}
+
+.dark-mode .products-section a:hover {
+  color: #a6d56b;
+}

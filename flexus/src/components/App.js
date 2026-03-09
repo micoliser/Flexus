@@ -10,6 +10,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { ThemeProvider, useTheme } from "../context/ThemeContext";
 import Header from "./Header";
 import Footer from "./Footer";
 import Home from "../pages/Home";
@@ -29,6 +30,8 @@ const ScrollToTop = () => {
 };
 
 const Layout = () => {
+  const { resolvedTheme } = useTheme();
+
   useEffect(() => {
     AOS.init({
       duration: 700,
@@ -48,7 +51,7 @@ const Layout = () => {
         closeOnClick
         pauseOnHover
         draggable
-        theme="light"
+        theme={resolvedTheme}
       />
       <Header />
       <Outlet />
@@ -72,18 +75,20 @@ const Layout = () => {
 
 function App() {
   return (
-    <Router>
-      <ScrollToTop />
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/products/:id" element={<ProductDetails />} />
-          <Route path="/contact" element={<Contact />} />
-        </Route>
-      </Routes>
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <ScrollToTop />
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/products/:id" element={<ProductDetails />} />
+            <Route path="/contact" element={<Contact />} />
+          </Route>
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 }
 
