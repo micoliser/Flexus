@@ -1,55 +1,8 @@
 import ProductCard from "../components/ProductCard";
 import { Link } from "react-router-dom";
+import { products } from "../data/products";
 
 const Products = () => {
-  const products = [
-    {
-      name: "Cashew Nuts",
-      description: "Premium cashew nuts with excellent flavor and texture.",
-      image: require("../images/cashew-nuts.png"),
-    },
-    {
-      name: "Cocoa Beans",
-      description: "Rich cocoa beans for chocolate production.",
-      image: require("../images/cocoa-2.png"),
-    },
-    {
-      name: "Corn",
-      description:
-        "Quality corn sourced from trusted farmers, ideal for any use",
-      image: require("../images/corn-2.png"),
-    },
-    {
-      name: "Tumeric",
-      description:
-        "Bright yellow turmeric with strong flavor and aroma, perfect for culinary and medicinal use.",
-      image: require("../images/tumeric.png"),
-    },
-    {
-      name: "Coconut",
-      description:
-        "Fresh coconuts with sweet water and creamy meat,for cooking and beverages.",
-      image: require("../images/coconut.png"),
-    },
-    {
-      name: "Sheanut",
-      description:
-        "Sheanut with high oil content, really good for skincare products.",
-      image: require("../images/sheanut.png"),
-    },
-    {
-      name: "Ginger",
-      description:
-        "Fresh ginger with a spicy kick and aromatic flavor, ideal for cooking and health remedies.",
-      image: require("../images/ginger.png"),
-    },
-    {
-      name: "Bitter Kola",
-      description:
-        "Bitter kola with a distinct bitter taste and potential health benefits, commonly used in traditional medicine.",
-      image: require("../images/bitter-kola.png"),
-    },
-  ];
   return (
     <main className="m-0 p-0">
       <section className="products hero-section d-flex align-items-center position-relative">
@@ -77,7 +30,7 @@ const Products = () => {
             {products.map((product, index) => (
               <div
                 className="col-6 col-lg-3 col-md-4"
-                key={index}
+                key={product.id}
                 data-aos="fade-up"
                 data-aos-delay={index * 50}
               >

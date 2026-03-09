@@ -1,26 +1,10 @@
 import ProductCard from "../components/ProductCard";
 import { Link } from "react-router-dom";
 import CardR from "../components/CardR";
+import { products } from "../data/products";
 
 const Home = () => {
-  const products = [
-    {
-      name: "Corn",
-      description: "High-quality corn sourced from trusted farmers.",
-      image: require("../images/corn.png"),
-    },
-    {
-      name: "Cashew",
-      description: "Premium cashew nuts with excellent flavor and texture.",
-      image: require("../images/cashew-bowl.png"),
-    },
-    {
-      name: "Cocoa",
-      description: "Rich cocoa beans for chocolate production.",
-      image: require("../images/cocoa.png"),
-    },
-  ];
-
+  const homeProducts = products.slice(0, 3); // Show only first 3 products on home page
   return (
     <main className="m-0 p-0">
       <section className="home hero-section d-flex align-items-center position-relative">
@@ -148,7 +132,7 @@ const Home = () => {
         <h1 className="text-center fw-bold mb-5">Our Products</h1>
         <div className="container px-5">
           <div className="row g-4">
-            {products.map((product, index) => (
+            {homeProducts.map((product, index) => (
               <div
                 className="col-12 col-lg-4 col-md-6"
                 key={index}

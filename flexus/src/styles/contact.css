@@ -28,6 +28,16 @@
   box-shadow: 0 0 0 0.2rem rgba(128, 185, 64, 0.25);
 }
 
+.contact-form-card .form-control.is-invalid {
+  border-color: #dc3545;
+  padding-right: 2.75rem;
+}
+
+.contact-form-card .form-control.is-invalid:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
 .map-section {
   margin-bottom: 0;
 }

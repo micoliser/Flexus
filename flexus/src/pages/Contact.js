@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -91,6 +92,9 @@ const Contact = () => {
         type: "success",
         message: "Message sent successfully! We'll get back to you shortly.",
       });
+      toast.success(
+        "Message sent successfully! We'll get back to you shortly.",
+      );
 
       setFormData({ name: "", email: "", message: "" });
     } else {
@@ -99,6 +103,7 @@ const Contact = () => {
         type: "error",
         message: "Failed to send message. Please try again.",
       });
+      toast.error("Failed to send message. Please try again.");
     }
   };
 
@@ -234,7 +239,7 @@ const Contact = () => {
                     )}
                     <input
                       type="text"
-                      className="form-control form-control-lg"
+                      className={`form-control form-control-lg ${formErrors.name ? "is-invalid" : ""}`}
                       placeholder="Your Name"
                       onChange={handleChange}
                       name="name"
@@ -249,7 +254,7 @@ const Contact = () => {
                     )}
                     <input
                       type="text"
-                      className="form-control form-control-lg"
+                      className={`form-control form-control-lg ${formErrors.email ? "is-invalid" : ""}`}
                       placeholder="Your Email"
                       onChange={handleChange}
                       name="email"
@@ -263,7 +268,7 @@ const Contact = () => {
                       </div>
                     )}
                     <textarea
-                      className="form-control form-control-lg"
+                      className={`form-control form-control-lg ${formErrors.message ? "is-invalid" : ""}`}
                       rows="6"
                       placeholder="Your Message"
                       onChange={handleChange}

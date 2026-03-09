@@ -7,12 +7,15 @@ import {
 import { useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Header from "./Header";
 import Footer from "./Footer";
 import Home from "../pages/Home";
 import Products from "../pages/Products";
 import Contact from "../pages/Contact";
 import About from "../pages/About";
+import ProductDetails from "../pages/ProductDetails";
 
 const Layout = () => {
   useEffect(() => {
@@ -26,6 +29,16 @@ const Layout = () => {
 
   return (
     <div className="App">
+      <ToastContainer
+        position="top-right"
+        autoClose={3500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="light"
+      />
       <Header />
       <Outlet />
       <Footer />
@@ -54,6 +67,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/products/:id" element={<ProductDetails />} />
           <Route path="/contact" element={<Contact />} />
         </Route>
       </Routes>
