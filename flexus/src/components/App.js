@@ -3,6 +3,7 @@ import {
   Routes,
   Route,
   Outlet,
+  useLocation,
 } from "react-router-dom";
 import { useEffect } from "react";
 import AOS from "aos";
@@ -16,6 +17,16 @@ import Products from "../pages/Products";
 import Contact from "../pages/Contact";
 import About from "../pages/About";
 import ProductDetails from "../pages/ProductDetails";
+
+const ScrollToTop = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+
+  return null;
+};
 
 const Layout = () => {
   useEffect(() => {
@@ -62,6 +73,7 @@ const Layout = () => {
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
