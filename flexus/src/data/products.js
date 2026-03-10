@@ -3,7 +3,7 @@ export const products = [
     id: "pd-8h2k7m",
     name: "Cashew Nuts",
     description: "Premium cashew nuts with excellent flavor and texture.",
-    image: require("../images/cashew-nuts.png"),
+    image: require("../images/products/cashew-nuts.png"),
     longDescription:
       "Our export-grade cashew nuts are carefully selected, naturally dried, and packed to preserve freshness and crunch. Ideal for snack brands, food processors, and wholesale buyers.",
     origin: "Kogi, Nigeria",
@@ -20,7 +20,7 @@ export const products = [
     id: "pd-3q9n1v",
     name: "Cocoa Beans",
     description: "Rich cocoa beans for chocolate production.",
-    image: require("../images/cocoa.png"),
+    image: require("../images/products/cocoa.png"),
     longDescription:
       "Fermented and sun-dried cocoa beans with consistent flavor profile and low impurity levels. Sourced from trusted farming communities and prepared for international buyers.",
     origin: "Ondo, Nigeria",
@@ -37,7 +37,7 @@ export const products = [
     id: "pd-6x4t2p",
     name: "Corn",
     description: "Quality corn sourced from trusted farmers, ideal for any use",
-    image: require("../images/corn.png"),
+    image: require("../images/products/corn.png"),
     longDescription:
       "Yellow maize processed to export standards for feed mills and food manufacturers. Cleaned, graded, and bagged with strict quality checks.",
     origin: "Kaduna, Nigeria",
@@ -55,7 +55,7 @@ export const products = [
     name: "Tumeric",
     description:
       "Bright yellow turmeric with strong flavor and aroma, perfect for culinary and medicinal use.",
-    image: require("../images/tumeric.png"),
+    image: require("../images/products/tumeric.png"),
     longDescription:
       "Premium dried turmeric fingers with deep color intensity and strong aroma. Suitable for spice processors, extractors, and wholesale distribution.",
     origin: "Nasarawa, Nigeria",
@@ -73,7 +73,7 @@ export const products = [
     name: "Coconut",
     description:
       "Fresh coconuts with sweet water and creamy meat,for cooking and beverages.",
-    image: require("../images/coconut.png"),
+    image: require("../images/products/coconut.png"),
     longDescription:
       "Fresh mature coconuts selected for export with uniform size and quality. Great for food processing, retail distribution, and coconut water production.",
     origin: "Lagos, Nigeria",
@@ -91,7 +91,7 @@ export const products = [
     name: "Sheanut",
     description:
       "Sheanut with high oil content, really good for skincare products.",
-    image: require("../images/sheanut.png"),
+    image: require("../images/products/sheanut.png"),
     longDescription:
       "High-oil shea nuts sourced from premium collection zones, suitable for cosmetic and food-grade processing. Cleaned and dried to maintain quality.",
     origin: "Niger, Nigeria",
@@ -109,7 +109,7 @@ export const products = [
     name: "Ginger",
     description:
       "Fresh ginger with a spicy kick and aromatic flavor, ideal for cooking and health remedies.",
-    image: require("../images/ginger.png"),
+    image: require("../images/products/ginger.png"),
     longDescription:
       "Fresh and dried ginger options available for exporters and manufacturers. Strong pungency, bright skin, and uniform roots from verified suppliers.",
     origin: "Kaduna, Nigeria",
@@ -127,7 +127,7 @@ export const products = [
     name: "Bitter Kola",
     description:
       "Bitter kola with a distinct bitter taste and potential health benefits, commonly used in traditional medicine.",
-    image: require("../images/bitter-kola.png"),
+    image: require("../images/products/bitter-kola.png"),
     longDescription:
       "Carefully sorted bitter kola nuts with consistent quality and freshness. Suitable for herbal markets, specialty stores, and export distributors.",
     origin: "Cross River, Nigeria",

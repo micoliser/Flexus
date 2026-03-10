@@ -1,39 +1,9 @@
 import { useState } from "react";
+import { teamMembers } from "../data/teamMembers";
 import TeamCard from "../components/TeamCard";
 
 const About = () => {
   const [activeIndex, setActiveIndex] = useState(0);
-
-  const teamMembers = [
-    {
-      name: "John Doe",
-      role: "Founder & CEO",
-      image: "https://placehold.co/600x400/006c43/ffffff?text=John+Doe",
-      description:
-        "John brings extensive expertise and dedication to Flexus Solutions. With a passion for excellence and agricultural innovation, he plays a vital role in our mission to deliver premium produce to global markets.",
-    },
-    {
-      name: "Sarah Smith",
-      role: "Operations Manager",
-      image: "https://placehold.co/600x400/3e6d09/ffffff?text=Sarah+Smith",
-      description:
-        "Sarah manages our day-to-day operations with precision and care. Her commitment to efficiency and quality ensures smooth processes from sourcing to delivery.",
-    },
-    {
-      name: "Michael Johnson",
-      role: "Quality Assurance Lead",
-      image: "https://placehold.co/600x400/80b940/ffffff?text=Michael+Johnson",
-      description:
-        "Michael oversees our quality control processes, ensuring that every product meets international standards. His attention to detail guarantees excellence in every shipment.",
-    },
-    {
-      name: "Emily Brown",
-      role: "Export Specialist",
-      image: "https://placehold.co/600x400/006c43/ffffff?text=Emily+Brown",
-      description:
-        "Emily handles international logistics and compliance with expertise. Her knowledge of global markets helps us deliver products efficiently worldwide.",
-    },
-  ];
 
   const handlePrev = () => {
     setActiveIndex((prev) => (prev === 0 ? teamMembers.length - 1 : prev - 1));

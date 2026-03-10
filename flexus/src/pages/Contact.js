@@ -20,6 +20,8 @@ const Contact = () => {
     message: "",
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     if (alert.show) {
       const timer = setTimeout(() => {
@@ -41,7 +43,7 @@ const Contact = () => {
   const sendEmail = async (formData) => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_ADDRESS}/api/v1/send-email`,
+        `${process.env.REACT_APP_API_ADDRESS}/api/${process.env.REACT_APP_API_VERSION}/email/contact`,
         {
           method: "POST",
           headers: {
@@ -66,6 +68,7 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
 
     const errors = {};
 
@@ -84,26 +87,31 @@ const Contact = () => {
 
     setFormErrors({});
 
-    const result = await sendEmail(formData);
+    setIsSubmitting(true);
+    try {
+      const result = await sendEmail(formData);
 
-    if (result.success) {
-      setAlert({
-        show: true,
-        type: "success",
-        message: "Message sent successfully! We'll get back to you shortly.",
-      });
-      toast.success(
-        "Message sent successfully! We'll get back to you shortly.",
-      );
+      if (result.success) {
+        setAlert({
+          show: true,
+          type: "success",
+          message: "Message sent successfully! We'll get back to you shortly.",
+        });
+        toast.success(
+          "Message sent successfully! We'll get back to you shortly.",
+        );
 
-      setFormData({ name: "", email: "", message: "" });
-    } else {
-      setAlert({
-        show: true,
-        type: "error",
-        message: "Failed to send message. Please try again.",
-      });
-      toast.error("Failed to send message. Please try again.");
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        setAlert({
+          show: true,
+          type: "error",
+          message: "Failed to send message. Please try again.",
+        });
+        toast.error("Failed to send message. Please try again.");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -280,8 +288,9 @@ const Contact = () => {
                     <button
                       type="submit"
                       className="btn btn-brand-primary btn-lg px-5"
+                      disabled={isSubmitting}
                     >
-                      Send Message
+                      {isSubmitting ? "Sending..." : "Send Message"}
                     </button>
                   </div>
                 </form>

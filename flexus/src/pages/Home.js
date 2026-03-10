@@ -84,7 +84,7 @@ const Home = () => {
             </div>
 
             <img
-              src={require("../images/about-bg.png")}
+              src={require("../images/bg/about-bg.png")}
               alt="Corn and cashew produce"
               className="about-panel-image d-none d-lg-block"
             />

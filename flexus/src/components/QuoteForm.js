@@ -14,6 +14,7 @@ const initialForm = {
 const QuoteForm = ({ isOpen, productName, onClose }) => {
   const [formData, setFormData] = useState(initialForm);
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const selectedCountry = useMemo(
     () =>
       countries.find(
@@ -106,19 +107,56 @@ const QuoteForm = ({ isOpen, productName, onClose }) => {
     setErrors((prev) => ({ ...prev, [name]: fieldError }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    if (isSubmitting) return;
     if (!validateAll()) return;
 
     const finalPhone = `${selectedDialCode}${formData.phone.replace(/\s|-/g, "")}`;
-    console.log("Quote request payload:", { ...formData, phone: finalPhone });
-    toast.success(
-      "Quote request submitted successfully. We will contact you soon.",
-    );
+    setIsSubmitting(true);
 
-    setFormData(initialForm);
-    setErrors({});
-    onClose();
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_ADDRESS}/api/${process.env.REACT_APP_API_VERSION}/email/quote`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            email: formData.email,
+            phone: finalPhone,
+            country: formData.country,
+            productName: productName,
+            note: formData.note,
+          }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        toast.success(
+          "Quote request submitted successfully! We will contact you soon.",
+        );
+        setFormData(initialForm);
+        setErrors({});
+        onClose();
+      } else {
+        toast.error(
+          data.message || "Failed to submit quote request. Please try again.",
+        );
+      }
+    } catch (error) {
+      console.error("Error submitting quote request:", error);
+      toast.error(
+        "An error occurred while submitting your request. Please try again later.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -273,8 +311,12 @@ const QuoteForm = ({ isOpen, productName, onClose }) => {
             >
               Cancel
             </button>
-            <button type="submit" className="btn btn-brand-primary">
-              Submit Request
+            <button
+              type="submit"
+              className="btn btn-brand-primary"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Submitting..." : "Submit Request"}
             </button>
           </div>
         </form>

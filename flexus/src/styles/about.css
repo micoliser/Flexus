@@ -2,7 +2,7 @@
 .about.hero-section {
   background:
     linear-gradient(rgba(0, 108, 67, 0.8), rgba(62, 109, 9, 0.7)),
-    url("../images/about-top-bg.png");
+    url("../images/bg/about-top-bg.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -77,9 +77,9 @@
   inset: 0;
   background: linear-gradient(
     to top,
-    rgba(0, 108, 67, 0.95) 0%,
-    rgba(0, 108, 67, 0.7) 50%,
-    rgba(0, 0, 0, 0.3) 100%
+    rgba(0, 108, 67, 0.3) 0%,
+    rgba(0, 108, 67, 0.2) 50%,
+    rgba(0, 0, 0, 0.1) 100%
   );
 }
 
@@ -90,10 +90,6 @@
 .team-card-content h3 {
   font-size: 1.8rem;
   margin-bottom: 0.5rem;
-}
-
-.team-card-content .text-brand-light {
-  color: #80b940;
 }
 
 /* Carousel Wrapper */

@@ -2,7 +2,7 @@
 .home.hero-section {
   background:
     linear-gradient(rgba(0, 108, 67, 0.75), rgba(62, 109, 9, 0.7)),
-    url("../images/home-top-bg.png");
+    url("../images/bg/home-top-bg.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
