@@ -18,7 +18,7 @@ const Header = () => {
       <nav
         className={`navbar navbar-expand-lg py-0 ${isDarkMode ? "navbar-dark" : "navbar-light"}`}
       >
-        <div className="container-nav mx-auto px-3">
+        <div className="container-nav mx-auto pe-4">
           <NavLink className="navbar-brand" to="/">
             <img
               src={
