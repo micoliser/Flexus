@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { countries } from "../data/countries";
+import api from "../api/api";
 
 const initialForm = {
   firstName: "",
@@ -116,28 +117,17 @@ const QuoteForm = ({ isOpen, productName, onClose }) => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_ADDRESS}/api/${process.env.REACT_APP_API_VERSION}/email/quote`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            email: formData.email,
-            phone: finalPhone,
-            country: formData.country,
-            productName: productName,
-            note: formData.note,
-          }),
-        },
-      );
+      const { data } = await api.post("/email/quote", {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: finalPhone,
+        country: formData.country,
+        productName: productName,
+        note: formData.note,
+      });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
+      if (data.success) {
         toast.success(
           "Quote request submitted successfully! We will contact you soon.",
         );
@@ -152,7 +142,8 @@ const QuoteForm = ({ isOpen, productName, onClose }) => {
     } catch (error) {
       console.error("Error submitting quote request:", error);
       toast.error(
-        "An error occurred while submitting your request. Please try again later.",
+        error.response?.data?.message ||
+          "An error occurred while submitting your request. Please try again later.",
       );
     } finally {
       setIsSubmitting(false);

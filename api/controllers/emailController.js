@@ -1,4 +1,5 @@
 import emailService from "../services/emailService.js";
+import LogService from "../services/logService.js";
 
 /**
  * Email controller - handles email-related HTTP requests
@@ -8,7 +9,7 @@ class EmailController {
    * Handle contact form submission
    * POST /api/v1/email/contact
    */
-  async sendContactEmail(req, res, next) {
+  static async sendContactEmail(req, res, next) {
     try {
       const { name, email, message } = req.body;
 
@@ -23,6 +24,15 @@ class EmailController {
       // Send email via service
       await emailService.sendContactEmail({ name, email, message });
 
+      await LogService.createLog({
+        action: "email.contact",
+        entityType: "email",
+        message: `Contact email submitted by ${email}`,
+        actorName: name,
+        actorEmail: email,
+        status: "success",
+      });
+
       res.json({ success: true });
     } catch (error) {
       console.error("Error sending contact email:", error);
@@ -34,7 +44,7 @@ class EmailController {
    * Handle quote request submission
    * POST /api/v1/email/quote
    */
-  async sendQuoteEmail(req, res, next) {
+  static async sendQuoteEmail(req, res, next) {
     try {
       const { firstName, lastName, email, phone, country, productName, note } =
         req.body;
@@ -66,6 +76,20 @@ class EmailController {
         note,
       });
 
+      await LogService.createLog({
+        action: "email.quote",
+        entityType: "email",
+        message: `Quote request for \"${productName}\" submitted by ${email}`,
+        actorName: `${firstName} ${lastName}`,
+        actorEmail: email,
+        status: "success",
+        metadata: {
+          productName,
+          country,
+          phone,
+        },
+      });
+
       res.json({ success: true });
     } catch (error) {
       console.error("Error sending quote email:", error);
@@ -74,4 +98,4 @@ class EmailController {
   }
 }
 
-export default new EmailController();
+export default EmailController;

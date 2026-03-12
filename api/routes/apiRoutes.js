@@ -1,6 +1,8 @@
 import express from "express";
 import emailRoutes from "./emailRoutes.js";
-import emailController from "../controllers/emailController.js";
+import productRoutes from "./productRoutes.js";
+import userRoutes from "./userRoutes.js";
+import logRoutes from "./logRoutes.js";
 
 const router = express.Router();
 
@@ -14,5 +16,8 @@ router.get("/health", (req, res) => {
 
 // API routes
 router.use("/email", emailRoutes);
+router.use("/products", productRoutes);
+router.use("/users", userRoutes);
+router.use("/logs", logRoutes);
 
 export default router;

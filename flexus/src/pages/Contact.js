@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import api from "../api/api";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -42,27 +43,15 @@ const Contact = () => {
 
   const sendEmail = async (formData) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_ADDRESS}/api/${process.env.REACT_APP_API_VERSION}/email/contact`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        },
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Something went wrong");
-      }
+      await api.post("/email/contact", formData);
 
       return { success: true };
     } catch (error) {
       console.error("Email Error:", error);
-      return { success: false, error: error.message };
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message,
+      };
     }
   };
 
