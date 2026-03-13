@@ -6,17 +6,17 @@ const productSchema = new Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
     description: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
     image: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
     longDescription: {
@@ -26,12 +26,12 @@ const productSchema = new Schema(
     },
     origin: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
     grade: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
     moisture: {
@@ -41,17 +41,17 @@ const productSchema = new Schema(
     },
     minOrder: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
     packaging: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
     shelfLife: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
     certifications: {
@@ -61,12 +61,12 @@ const productSchema = new Schema(
     },
     exportMarkets: {
       type: [String],
-      required: true,
+      required: false,
       default: [],
     },
     availability: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
     isPublished: {

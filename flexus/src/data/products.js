@@ -4,6 +4,11 @@ export const products = [
     name: "Cashew Nuts",
     description: "Premium cashew nuts with excellent flavor and texture.",
     image: require("../images/products/cashew-nuts.png"),
+    otherImages: [
+      "https://picsum.photos/seed/cashew-1/900/600",
+      "https://picsum.photos/seed/cashew-2/900/600",
+      "https://picsum.photos/seed/cashew-3/900/600",
+    ],
     longDescription:
       "Our export-grade cashew nuts are carefully selected, naturally dried, and packed to preserve freshness and crunch. Ideal for snack brands, food processors, and wholesale buyers.",
     origin: "Kogi, Nigeria",
@@ -21,6 +26,14 @@ export const products = [
     name: "Cocoa Beans",
     description: "Rich cocoa beans for chocolate production.",
     image: require("../images/products/cocoa.png"),
+    otherImages: [
+      "https://picsum.photos/seed/cocoa-1/900/600",
+      "https://picsum.photos/seed/cocoa-2/900/600",
+      "https://picsum.photos/seed/cocoa-3/900/600",
+      "https://picsum.photos/seed/cocoa-4/900/600",
+      "https://picsum.photos/seed/cocoa-5/900/600",
+      "https://picsum.photos/seed/cocoa-6/900/600",
+    ],
     longDescription:
       "Fermented and sun-dried cocoa beans with consistent flavor profile and low impurity levels. Sourced from trusted farming communities and prepared for international buyers.",
     origin: "Ondo, Nigeria",
@@ -38,6 +51,10 @@ export const products = [
     name: "Corn",
     description: "Quality corn sourced from trusted farmers, ideal for any use",
     image: require("../images/products/corn.png"),
+    otherImages: [
+      "https://picsum.photos/seed/corn-1/900/600",
+      "https://picsum.photos/seed/corn-2/900/600",
+    ],
     longDescription:
       "Yellow maize processed to export standards for feed mills and food manufacturers. Cleaned, graded, and bagged with strict quality checks.",
     origin: "Kaduna, Nigeria",
@@ -56,6 +73,17 @@ export const products = [
     description:
       "Bright yellow turmeric with strong flavor and aroma, perfect for culinary and medicinal use.",
     image: require("../images/products/tumeric.png"),
+    otherImages: [
+      "https://picsum.photos/seed/turmeric-1/900/600",
+      "https://picsum.photos/seed/turmeric-2/900/600",
+      "https://picsum.photos/seed/turmeric-3/900/600",
+      "https://picsum.photos/seed/turmeric-4/900/600",
+      "https://picsum.photos/seed/turmeric-5/900/600",
+      "https://picsum.photos/seed/turmeric-6/900/600",
+      "https://picsum.photos/seed/turmeric-7/900/600",
+      "https://picsum.photos/seed/turmeric-8/900/600",
+      "https://picsum.photos/seed/turmeric-9/900/600",
+    ],
     longDescription:
       "Premium dried turmeric fingers with deep color intensity and strong aroma. Suitable for spice processors, extractors, and wholesale distribution.",
     origin: "Nasarawa, Nigeria",
@@ -74,6 +102,12 @@ export const products = [
     description:
       "Fresh coconuts with sweet water and creamy meat,for cooking and beverages.",
     image: require("../images/products/coconut.png"),
+    otherImages: [
+      "https://picsum.photos/seed/coconut-1/900/600",
+      "https://picsum.photos/seed/coconut-2/900/600",
+      "https://picsum.photos/seed/coconut-3/900/600",
+      "https://picsum.photos/seed/coconut-4/900/600",
+    ],
     longDescription:
       "Fresh mature coconuts selected for export with uniform size and quality. Great for food processing, retail distribution, and coconut water production.",
     origin: "Lagos, Nigeria",
@@ -92,6 +126,9 @@ export const products = [
     description:
       "Sheanut with high oil content, really good for skincare products.",
     image: require("../images/products/sheanut.png"),
+    otherImages: [
+      "https://picsum.photos/seed/sheanut-1/900/600",
+    ],
     longDescription:
       "High-oil shea nuts sourced from premium collection zones, suitable for cosmetic and food-grade processing. Cleaned and dried to maintain quality.",
     origin: "Niger, Nigeria",
@@ -110,6 +147,18 @@ export const products = [
     description:
       "Fresh ginger with a spicy kick and aromatic flavor, ideal for cooking and health remedies.",
     image: require("../images/products/ginger.png"),
+    otherImages: [
+      "https://picsum.photos/seed/ginger-1/900/600",
+      "https://picsum.photos/seed/ginger-2/900/600",
+      "https://picsum.photos/seed/ginger-3/900/600",
+      "https://picsum.photos/seed/ginger-4/900/600",
+      "https://picsum.photos/seed/ginger-5/900/600",
+      "https://picsum.photos/seed/ginger-6/900/600",
+      "https://picsum.photos/seed/ginger-7/900/600",
+      "https://picsum.photos/seed/ginger-8/900/600",
+      "https://picsum.photos/seed/ginger-9/900/600",
+      "https://picsum.photos/seed/ginger-10/900/600",
+    ],
     longDescription:
       "Fresh and dried ginger options available for exporters and manufacturers. Strong pungency, bright skin, and uniform roots from verified suppliers.",
     origin: "Kaduna, Nigeria",
@@ -128,6 +177,13 @@ export const products = [
     description:
       "Bitter kola with a distinct bitter taste and potential health benefits, commonly used in traditional medicine.",
     image: require("../images/products/bitter-kola.png"),
+    otherImages: [
+      "https://picsum.photos/seed/bitter-kola-1/900/600",
+      "https://picsum.photos/seed/bitter-kola-2/900/600",
+      "https://picsum.photos/seed/bitter-kola-3/900/600",
+      "https://picsum.photos/seed/bitter-kola-4/900/600",
+      "https://picsum.photos/seed/bitter-kola-5/900/600",
+    ],
     longDescription:
       "Carefully sorted bitter kola nuts with consistent quality and freshness. Suitable for herbal markets, specialty stores, and export distributors.",
     origin: "Cross River, Nigeria",

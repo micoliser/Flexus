@@ -163,6 +163,11 @@
   gap: 0.45rem;
 }
 
+.admin-inline-confirm-static {
+  position: static;
+  margin-top: 1rem;
+}
+
 .admin-main-panel {
   padding: 1.4rem 1.6rem;
   overflow-y: auto;
@@ -261,12 +266,28 @@
 }
 
 .admin-logs-grid {
-  grid-template-columns: 1.3fr 1fr 1fr;
+  grid-template-columns: 1.2fr 1fr 1fr 1.8fr 0.8fr;
 }
 
 .admin-log-action,
 .admin-log-performer {
   color: #193f32;
+}
+
+.admin-log-details {
+  color: #24493e;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.admin-pill-success {
+  background: #dff5ea;
+  color: #0e7d4d;
+}
+
+.admin-pill-failure {
+  background: #f8d7da;
+  color: #842029;
 }
 
 .admin-pill {
@@ -471,6 +492,12 @@
   font-size: 0.84rem;
 }
 
+.admin-form-info {
+  margin: 0.4rem 0 0;
+  color: #6b7f78;
+  font-size: 0.84rem;
+}
+
 .admin-checkbox-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -510,7 +537,7 @@
 .admin-pagination-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 0.75rem;
   margin-top: 1rem;
   padding-top: 0.85rem;
@@ -605,6 +632,10 @@
   color: #f3f6f4;
 }
 
+.dark-mode .admin-log-details {
+  color: #d6e5df;
+}
+
 .dark-mode .admin-main-header p,
 .dark-mode .admin-stat-label,
 .dark-mode .admin-table-head,
@@ -663,6 +694,10 @@
   color: #f2a1ab;
 }
 
+.dark-mode .admin-form-info {
+  color: #a8b6b0;
+}
+
 .dark-mode .admin-checkbox-card {
   background: #212529;
   border-color: #434a4d;
@@ -699,6 +734,16 @@
 .dark-mode .admin-pill-disabled {
   background: rgba(155, 53, 53, 0.3);
   color: #f4a0a0;
+}
+
+.dark-mode .admin-pill-success {
+  background: rgba(13, 125, 78, 0.3);
+  color: #81deb3;
+}
+
+.dark-mode .admin-pill-failure {
+  background: rgba(132, 32, 41, 0.35);
+  color: #f5a3ab;
 }
 
 .dark-mode .admin-icon-btn {

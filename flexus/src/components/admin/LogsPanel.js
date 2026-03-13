@@ -55,6 +55,8 @@ const LogsPanel = () => {
           <span>Timestamp</span>
           <span>Action</span>
           <span>Performed By</span>
+          <span>Details</span>
+          <span>Status</span>
         </div>
 
         {isLoading && <div className="admin-table-empty">Loading logs...</div>}
@@ -70,6 +72,16 @@ const LogsPanel = () => {
               <span className="admin-log-action">{log.action || "-"}</span>
               <span className="admin-log-performer">
                 {log.actorEmail || log.actorName || "System"}
+              </span>
+              <span className="admin-log-details">{log.message || "-"}</span>
+              <span
+                className={`admin-pill ${
+                  log.status === "failure"
+                    ? "admin-pill-failure"
+                    : "admin-pill-success"
+                }`}
+              >
+                {log.status || "success"}
               </span>
             </div>
           ))}

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import api from "../../api/api";
 import UserFormModal from "./UserFormModal";
+import ConfirmModal from "./ConfirmModal";
 
 const getRolePill = (user) => {
   if (user.isDisabled)
@@ -158,51 +159,19 @@ const UsersPanel = () => {
         user={editUser}
       />
 
-      {confirmUser && (
-        <div className="admin-modal-overlay" onClick={() => setConfirmUser(null)}>
-          <div className="admin-modal-card admin-modal-card-sm" onClick={(event) => event.stopPropagation()}>
-            <div className="admin-modal-header">
-              <div>
-                <h3 className="admin-modal-title">Confirm Action</h3>
-                <p className="admin-modal-subtitle">
-                  Are you sure you want to {confirmUser.isDisabled ? "enable" : "disable"} user with email {confirmUser.emailAddress}?
-                </p>
-              </div>
-              <button
-                type="button"
-                className="admin-modal-close"
-                onClick={() => setConfirmUser(null)}
-                aria-label="Close"
-              >
-                <i className="bi bi-x-lg"></i>
-              </button>
-            </div>
-
-            <div className="admin-confirm-actions">
-              <button
-                type="button"
-                className="btn btn-outline-secondary"
-                onClick={() => setConfirmUser(null)}
-                disabled={isDisabling}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="btn btn-danger"
-                onClick={() => handleDisable(confirmUser)}
-                disabled={isDisabling}
-              >
-                {isDisabling
-                  ? "Please wait..."
-                  : confirmUser.isDisabled
-                    ? "Yes, enable"
-                    : "Yes, disable"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmModal
+        isOpen={!!confirmUser}
+        title="Confirm Action"
+        message={
+          confirmUser
+            ? `Are you sure you want to ${confirmUser.isDisabled ? "enable" : "disable"} user with email ${confirmUser.emailAddress}?`
+            : ""
+        }
+        confirmLabel={confirmUser?.isDisabled ? "Yes, enable" : "Yes, disable"}
+        onConfirm={() => confirmUser && handleDisable(confirmUser)}
+        onCancel={() => !isDisabling && setConfirmUser(null)}
+        isLoading={isDisabling}
+      />
     </section>
   );
 };

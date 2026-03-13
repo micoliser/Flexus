@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
+import MoreImagesCarousel from "../components/MoreImagesCarousel";
 import QuoteForm from "../components/QuoteForm";
 import { getProductById, products } from "../data/products";
 
@@ -40,34 +41,39 @@ const ProductDetails = () => {
       >
         <div className="container">
           <div className="row g-4 align-items-stretch">
-            <div className="col-12 col-lg-5">
-              <div className="product-details-image-card h-50 rounded-4 overflow-hidden shadow-sm">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="img-fluid w-100 h-100 object-fit-cover"
-                />
-              </div>
-            </div>
-
-            <div className="col-12 col-lg-7">
+            <div className="col-12 px-lg-5">
               <div className="product-details-card bg-white rounded-4 p-4 p-lg-5 shadow-sm h-100">
-                <h2 className="fw-bold text-brand-dark mb-3">{product.name}</h2>
-                <p className="text-muted mb-4">{product.longDescription}</p>
+                <div className="product-details-top mb-4">
+                  <div className="product-details-summary">
+                    <h2 className="fw-bold text-brand-dark mb-3">
+                      {product.name}
+                    </h2>
+                    <p className="text-muted mb-0">{product.longDescription}</p>
+                  </div>
 
-                <div className="row g-3 mb-4">
-                  <div className="col-12 col-md-6">
-                    <div className="product-meta-item">
+                  <div className="product-image-side-meta">
+                    <div className="product-meta-item product-meta-item-compact">
                       <span className="meta-label">Origin</span>
                       <p className="mb-0 fw-medium">{product.origin}</p>
                     </div>
-                  </div>
-                  <div className="col-12 col-md-6">
-                    <div className="product-meta-item">
+                    <div className="product-meta-item product-meta-item-compact">
                       <span className="meta-label">Grade</span>
                       <p className="mb-0 fw-medium">{product.grade}</p>
                     </div>
                   </div>
+
+                  <div className="product-details-main-image-wrap">
+                    <div className="product-details-image-card rounded-4 overflow-hidden shadow-sm">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="img-fluid w-100 object-fit-cover"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="row g-3 mb-4">
                   <div className="col-12 col-md-6">
                     <div className="product-meta-item">
                       <span className="meta-label">Moisture</span>
@@ -115,6 +121,11 @@ const ProductDetails = () => {
                     {product.exportMarkets.join(", ")}
                   </p>
                 </div>
+
+                <MoreImagesCarousel
+                  images={product.otherImages || []}
+                  productName={product.name}
+                />
 
                 <div className="d-flex flex-wrap gap-3 align-items-center">
                   <button
