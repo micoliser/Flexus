@@ -89,7 +89,8 @@ class UserController {
         });
         return res.status(403).json({
           success: false,
-          message: "This account has been disabled. Contact admin for more information",
+          message:
+            "This account has been disabled. Contact admin for more information",
         });
       }
 
@@ -102,7 +103,8 @@ class UserController {
         entityId: userData.id,
         message: `User ${userData.emailAddress} logged in successfully`,
         actorUserId: userData.id,
-        actorName: `${userData.firstName || ""} ${userData.lastName || ""}`.trim(),
+        actorName:
+          `${userData.firstName || ""} ${userData.lastName || ""}`.trim(),
         actorEmail: userData.emailAddress,
         status: "success",
       });
@@ -163,7 +165,39 @@ class UserController {
   // GET /api/v1/users
   static async getAllUsers(req, res, next) {
     try {
-      const users = await User.find().sort({ createdAt: -1 });
+      const { search = "", role = "all" } = req.query;
+      const query = {};
+
+      const trimmedSearch = String(search || "").trim();
+      if (trimmedSearch) {
+        query.$or = [
+          { firstName: { $regex: trimmedSearch, $options: "i" } },
+          { lastName: { $regex: trimmedSearch, $options: "i" } },
+        ];
+      }
+
+      const normalizedRole = String(role || "all")
+        .trim()
+        .toLowerCase();
+      if (normalizedRole === "admin") {
+        query.isDisabled = false;
+        query.isAdmin = true;
+      } else if (normalizedRole === "staff") {
+        query.isDisabled = false;
+        query.isAdmin = false;
+        query.isStaff = true;
+      } else if (normalizedRole === "disabled") {
+        query.isDisabled = true;
+      } else if (normalizedRole === "all") {
+        // no-op
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid role filter. Use all, admin, staff, or disabled.",
+        });
+      }
+
+      const users = await User.find(query).sort({ createdAt: -1 });
       res.json({ success: true, data: users });
     } catch (error) {
       next(error);

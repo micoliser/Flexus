@@ -19,6 +19,11 @@ const productSchema = new Schema(
       required: false,
       trim: true,
     },
+    otherImages: {
+      type: [String],
+      required: false,
+      default: [],
+    },
     longDescription: {
       type: String,
       required: false,

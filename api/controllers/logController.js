@@ -11,9 +11,30 @@ class LogController {
       );
       const skip = (page - 1) * limit;
 
+      const query = {};
+
+      const trimmedSearch = String(req.query.search || "").trim();
+      if (trimmedSearch) {
+        query.actorEmail = { $regex: trimmedSearch, $options: "i" };
+      }
+
+      const { startDate: startDateParam, endDate: endDateParam } = req.query;
+      if (startDateParam || endDateParam) {
+        query.createdAt = {};
+        if (startDateParam) {
+          const startDate = new Date(startDateParam);
+          if (!isNaN(startDate.getTime())) query.createdAt.$gte = startDate;
+        }
+        if (endDateParam) {
+          const endDate = new Date(endDateParam);
+          if (!isNaN(endDate.getTime())) query.createdAt.$lte = endDate;
+        }
+        if (!Object.keys(query.createdAt).length) delete query.createdAt;
+      }
+
       const [logs, total] = await Promise.all([
-        Log.find().sort({ createdAt: -1 }).skip(skip).limit(limit),
-        Log.countDocuments(),
+        Log.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
+        Log.countDocuments(query),
       ]);
 
       const totalPages = Math.max(Math.ceil(total / limit), 1);

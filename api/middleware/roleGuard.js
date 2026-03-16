@@ -43,7 +43,8 @@ export const authenticate = async (req, res, next) => {
     if (dbUser.isDisabled) {
       return res.status(403).json({
         success: false,
-        message: "This account has been disabled. Contact admin for more information",
+        message:
+          "This account has been disabled. Contact admin for more information",
       });
     }
 
@@ -60,6 +61,32 @@ export const authenticate = async (req, res, next) => {
       success: false,
       message: "Invalid or expired token",
     });
+  }
+};
+
+export const optionalAuthenticate = async (req, _res, next) => {
+  try {
+    const token = parseBearerToken(req);
+    if (!token) return next();
+
+    const secret = process.env.JWT_SECRET;
+    if (!secret) return next();
+
+    const payload = jwt.verify(token, secret);
+
+    const dbUser = await User.findById(payload.sub).select("isDisabled");
+    if (!dbUser || dbUser.isDisabled) return next();
+
+    req.user = {
+      id: payload.sub,
+      emailAddress: payload.emailAddress,
+      isStaff: payload.isStaff === true,
+      isAdmin: payload.isAdmin === true,
+    };
+
+    return next();
+  } catch (_error) {
+    return next();
   }
 };
 

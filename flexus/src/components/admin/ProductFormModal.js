@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import axios from "axios";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import api from "../../api/api";
 
@@ -32,6 +33,8 @@ const PUBLISH_REQUIRED_FIELDS = [
 ];
 
 const getProductId = (product) => product?.id || product?._id;
+const MAX_OTHER_IMAGES = 10;
+const MAX_IMAGE_FILE_SIZE_BYTES = 5 * 1024 * 1024;
 
 const hasAtLeastOneDraftField = (payload = {}) => {
   const stringFields = [
@@ -67,7 +70,12 @@ const hasAtLeastOneDraftField = (payload = {}) => {
       .map((item) => item.trim())
       .filter(Boolean).length > 0;
 
-  return hasStringValue || hasCertifications || hasExportMarkets;
+  const hasOtherImages =
+    Array.isArray(payload.otherImages) && payload.otherImages.length > 0;
+
+  return (
+    hasStringValue || hasCertifications || hasExportMarkets || hasOtherImages
+  );
 };
 
 const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
@@ -75,6 +83,10 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDraftConfirm, setShowDraftConfirm] = useState(false);
+  const [existingOtherImages, setExistingOtherImages] = useState([]);
+  const [otherImageFiles, setOtherImageFiles] = useState([]);
+  const [mainImagePreviewUrl, setMainImagePreviewUrl] = useState("");
+  const mainImageInputRef = useRef(null);
   const isEditMode = !!product;
 
   useEffect(() => {
@@ -100,8 +112,20 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
           : "",
         availability: product.availability || "",
       });
+      setExistingOtherImages(
+        Array.isArray(product.otherImages)
+          ? product.otherImages
+              .map((item) => String(item).trim())
+              .filter(Boolean)
+          : [],
+      );
+      setOtherImageFiles([]);
+      setMainImagePreviewUrl(product.image || "");
     } else {
       setFormData(initialProductForm);
+      setExistingOtherImages([]);
+      setOtherImageFiles([]);
+      setMainImagePreviewUrl("");
     }
 
     setErrors({});
@@ -115,6 +139,27 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
     };
   }, [isOpen, isEditMode, product]);
 
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    if (formData.image && typeof formData.image === "object") {
+      const objectUrl = URL.createObjectURL(formData.image);
+      setMainImagePreviewUrl(objectUrl);
+
+      return () => {
+        URL.revokeObjectURL(objectUrl);
+      };
+    }
+
+    if (isEditMode && product?.image) {
+      setMainImagePreviewUrl(product.image);
+      return undefined;
+    }
+
+    setMainImagePreviewUrl("");
+    return undefined;
+  }, [formData.image, isEditMode, isOpen, product]);
+
   const imageValue = useMemo(() => {
     if (formData.image && typeof formData.image === "object") {
       return formData.image.name || "";
@@ -127,6 +172,7 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
 
   const hasAnyInput = () => {
     if (formData.image) return true;
+    if (otherImageFiles.some(Boolean)) return true;
 
     return Object.entries(formData).some(([key, value]) => {
       if (key === "image") return false;
@@ -134,10 +180,21 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
     });
   };
 
-  const buildPayload = () => ({
+  const buildPayload = ({ imageOverride, otherImagesOverride } = {}) => ({
     name: formData.name.trim(),
     description: formData.description.trim(),
-    image: imageValue,
+    image: imageOverride !== undefined ? imageOverride : imageValue,
+    otherImages:
+      otherImagesOverride !== undefined
+        ? otherImagesOverride
+        : [
+            ...existingOtherImages,
+            ...otherImageFiles
+              .map((file) =>
+                file && typeof file === "object" ? file.name : "",
+              )
+              .filter(Boolean),
+          ],
     longDescription: formData.longDescription.trim(),
     origin: formData.origin.trim(),
     grade: formData.grade.trim(),
@@ -184,6 +241,155 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
     }
   };
 
+  const totalOtherImages = existingOtherImages.length + otherImageFiles.length;
+  const remainingOtherImages = Math.max(0, MAX_OTHER_IMAGES - totalOtherImages);
+
+  const handleAddOtherImageField = () => {
+    if (totalOtherImages >= MAX_OTHER_IMAGES) {
+      setErrors((prev) => ({ ...prev, otherImages: "Max limit reached" }));
+      toast.error("Max limit reached");
+      return;
+    }
+
+    setOtherImageFiles((prev) => [...prev, null]);
+    if (errors.otherImages) {
+      setErrors((prev) => ({ ...prev, otherImages: "" }));
+    }
+  };
+
+  const handleOtherImageFileChange = (index, file) => {
+    setOtherImageFiles((prev) => {
+      const next = [...prev];
+      next[index] = file;
+      return next;
+    });
+
+    if (errors.otherImages) {
+      setErrors((prev) => ({ ...prev, otherImages: "" }));
+    }
+  };
+
+  const handleRemoveExistingOtherImage = (imageToRemove) => {
+    setExistingOtherImages((prev) =>
+      prev.filter((image) => image !== imageToRemove),
+    );
+
+    if (errors.otherImages) {
+      setErrors((prev) => ({ ...prev, otherImages: "" }));
+    }
+  };
+
+  const openMainImagePicker = () => {
+    mainImageInputRef.current?.click();
+  };
+
+  const handleRemoveOtherImageField = (index) => {
+    setOtherImageFiles((prev) =>
+      prev.filter((_, currentIndex) => currentIndex !== index),
+    );
+
+    if (errors.otherImages) {
+      setErrors((prev) => ({ ...prev, otherImages: "" }));
+    }
+  };
+
+  const validateUploadedImages = () => {
+    const nextErrors = {};
+
+    if (formData.image && typeof formData.image === "object") {
+      if (!formData.image.type?.startsWith("image/")) {
+        nextErrors.image = "Product image must be an image file.";
+      } else if (formData.image.size > MAX_IMAGE_FILE_SIZE_BYTES) {
+        nextErrors.image = "Product image must not be more than 5MB.";
+      }
+    }
+
+    const invalidOtherImage = otherImageFiles.find((file) => {
+      if (!file || typeof file !== "object") return false;
+      if (!file.type?.startsWith("image/")) return true;
+      if (file.size > MAX_IMAGE_FILE_SIZE_BYTES) return true;
+      return false;
+    });
+
+    if (invalidOtherImage) {
+      if (!invalidOtherImage.type?.startsWith("image/")) {
+        nextErrors.otherImages = "Each uploaded image must be an image file.";
+      } else {
+        nextErrors.otherImages =
+          "Each uploaded image must not be more than 5MB.";
+      }
+    }
+
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors((prev) => ({ ...prev, ...nextErrors }));
+      toast.error(nextErrors.image || nextErrors.otherImages);
+      return false;
+    }
+
+    return true;
+  };
+
+  const requestProductUploadUrl = async ({ fileName, fileType }) => {
+    const { data } = await api.post("/products/upload-url", {
+      fileName,
+      fileType,
+    });
+
+    return data?.data;
+  };
+
+  const uploadFileToPresignedUrl = async ({ uploadUrl, file, fileType }) => {
+    await axios.put(uploadUrl, file, {
+      headers: {
+        "Content-Type": fileType,
+      },
+    });
+  };
+
+  const uploadSelectedImagesToS3 = async () => {
+    let mainImageUrl;
+    const otherImageUrls = [];
+
+    if (formData.image && typeof formData.image === "object") {
+      const uploadTarget = await requestProductUploadUrl({
+        fileName: formData.image.name,
+        fileType: formData.image.type,
+      });
+
+      await uploadFileToPresignedUrl({
+        uploadUrl: uploadTarget.uploadUrl,
+        file: formData.image,
+        fileType: formData.image.type,
+      });
+
+      mainImageUrl = uploadTarget.fileUrl;
+    }
+
+    const newOtherImageFiles = otherImageFiles.filter(
+      (file) => file && typeof file === "object",
+    );
+
+    for (const file of newOtherImageFiles) {
+      const uploadTarget = await requestProductUploadUrl({
+        fileName: file.name,
+        fileType: file.type,
+      });
+
+      await uploadFileToPresignedUrl({
+        uploadUrl: uploadTarget.uploadUrl,
+        file,
+        fileType: file.type,
+      });
+
+      otherImageUrls.push(uploadTarget.fileUrl);
+    }
+
+    return {
+      mainImageUrl,
+      otherImageUrls,
+    };
+  };
+
   const closeModal = () => {
     setShowDraftConfirm(false);
     onClose();
@@ -191,6 +397,7 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
 
   const saveDraft = async () => {
     if (isSubmitting) return;
+    if (!validateUploadedImages()) return;
 
     const payload = buildPayload();
     if (!hasAtLeastOneDraftField(payload)) {
@@ -201,6 +408,13 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
     setIsSubmitting(true);
 
     try {
+      const { mainImageUrl, otherImageUrls } = await uploadSelectedImagesToS3();
+
+      const payload = buildPayload({
+        imageOverride: mainImageUrl !== undefined ? mainImageUrl : imageValue,
+        otherImagesOverride: [...existingOtherImages, ...otherImageUrls],
+      });
+
       if (isEditMode) {
         const productId = getProductId(product);
         await api.put(`/products/${productId}`, {
@@ -226,12 +440,18 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
 
   const publishProduct = async () => {
     if (isSubmitting) return;
+    if (!validateUploadedImages()) return;
     if (!validateForPublish()) return;
 
     setIsSubmitting(true);
 
     try {
-      const payload = buildPayload();
+      const { mainImageUrl, otherImageUrls } = await uploadSelectedImagesToS3();
+
+      const payload = buildPayload({
+        imageOverride: mainImageUrl !== undefined ? mainImageUrl : imageValue,
+        otherImagesOverride: [...existingOtherImages, ...otherImageUrls],
+      });
 
       if (isEditMode) {
         const productId = getProductId(product);
@@ -348,14 +568,68 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
             <label htmlFor="product-image" className="admin-form-label">
               Product Image *
             </label>
-            <input
-              id="product-image"
-              name="image"
-              type="file"
-              accept="image/*"
-              className={`admin-form-control ${errors.image ? "is-invalid" : ""}`}
-              onChange={handleChange}
-            />
+            {isEditMode ? (
+              <div className="admin-image-panel">
+                <input
+                  ref={mainImageInputRef}
+                  id="product-image"
+                  name="image"
+                  type="file"
+                  accept="image/*"
+                  className={`admin-form-control ${errors.image ? "is-invalid" : ""}`}
+                  onChange={handleChange}
+                  style={{ display: "none" }}
+                />
+
+                {mainImagePreviewUrl ? (
+                  <div className="admin-image-preview-card">
+                    <img
+                      src={mainImagePreviewUrl}
+                      alt={formData.name || product?.name || "Product image"}
+                      className="admin-image-preview"
+                    />
+                    <div className="admin-image-preview-meta">
+                      <p className="admin-image-preview-label">
+                        {formData.image
+                          ? "Selected replacement image"
+                          : "Current saved image"}
+                      </p>
+                      <button
+                        type="button"
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={openMainImagePicker}
+                        disabled={isSubmitting}
+                      >
+                        Change Image
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="admin-image-empty-state">
+                    <p className="admin-form-info mb-2">
+                      No image selected yet.
+                    </p>
+                    <button
+                      type="button"
+                      className="btn btn-outline-primary btn-sm"
+                      onClick={openMainImagePicker}
+                      disabled={isSubmitting}
+                    >
+                      Select Image
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <input
+                id="product-image"
+                name="image"
+                type="file"
+                accept="image/*"
+                className={`admin-form-control ${errors.image ? "is-invalid" : ""}`}
+                onChange={handleChange}
+              />
+            )}
             {!!imageValue && (
               <p className="admin-form-info">Selected: {imageValue}</p>
             )}
@@ -378,6 +652,108 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
               onChange={handleChange}
               placeholder="Eg Sourced from high altitude farms in the region..."
             ></textarea>
+          </div>
+
+          <div className="admin-form-group admin-form-group-full">
+            <div className="d-flex align-items-center justify-content-between gap-2">
+              <label className="admin-form-label mb-0">
+                Other Images (Optional)
+              </label>
+              <button
+                type="button"
+                className="btn btn-outline-primary btn-sm"
+                onClick={handleAddOtherImageField}
+                disabled={isSubmitting}
+                aria-label="Add other image field"
+              >
+                <i className="bi bi-plus-lg me-1"></i>
+                Add Image
+              </button>
+            </div>
+
+            <p className="admin-form-info mb-2">
+              Max {MAX_OTHER_IMAGES} images. {remainingOtherImages} slot
+              {remainingOtherImages === 1 ? "" : "s"} remaining.
+            </p>
+
+            {existingOtherImages.length > 0 && (
+              <div className="admin-existing-images-grid mb-2">
+                {existingOtherImages.map((imageUrl, index) => (
+                  <article
+                    key={`${imageUrl}-${index}`}
+                    className="admin-existing-image-card"
+                  >
+                    <img
+                      src={imageUrl}
+                      alt={`Saved product ${index + 1}`}
+                      className="admin-existing-image-preview"
+                    />
+                    <div className="admin-existing-image-actions">
+                      <span className="admin-form-info">
+                        Saved image {index + 1}
+                      </span>
+                      <button
+                        type="button"
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={() => handleRemoveExistingOtherImage(imageUrl)}
+                        disabled={isSubmitting}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+
+            {isEditMode && existingOtherImages.length > 0 && (
+              <p className="admin-form-info mb-2">
+                Deleted saved images are only removed after you save or publish
+                this product.
+              </p>
+            )}
+
+            {otherImageFiles.length === 0 && (
+              <p className="admin-form-info mb-0">
+                Click + to add image upload fields.
+              </p>
+            )}
+
+            {otherImageFiles.map((file, index) => (
+              <div
+                key={`other-image-${index}`}
+                className="d-flex align-items-center gap-2 mb-2"
+              >
+                <input
+                  name={`otherImageFile-${index}`}
+                  type="file"
+                  accept="image/*"
+                  className="admin-form-control"
+                  onChange={(event) =>
+                    handleOtherImageFileChange(
+                      index,
+                      (event.target.files && event.target.files[0]) || null,
+                    )
+                  }
+                />
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  onClick={() => handleRemoveOtherImageField(index)}
+                  disabled={isSubmitting}
+                  aria-label="Remove other image field"
+                >
+                  <i className="bi bi-dash-lg"></i>
+                </button>
+                {file?.name && (
+                  <span className="small text-muted">{file.name}</span>
+                )}
+              </div>
+            ))}
+
+            {errors.otherImages && (
+              <p className="admin-form-error mb-0">{errors.otherImages}</p>
+            )}
           </div>
 
           <div className="admin-form-group">
@@ -577,8 +953,14 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
         </form>
 
         {showDraftConfirm && (
-          <div className="admin-modal-overlay" onClick={() => setShowDraftConfirm(false)}>
-            <div className="admin-modal-card admin-modal-card-sm" onClick={(event) => event.stopPropagation()}>
+          <div
+            className="admin-modal-overlay"
+            onClick={() => setShowDraftConfirm(false)}
+          >
+            <div
+              className="admin-modal-card admin-modal-card-sm"
+              onClick={(event) => event.stopPropagation()}
+            >
               <div className="admin-modal-header">
                 <div>
                   <h3 className="admin-modal-title">Save Draft?</h3>

@@ -23,20 +23,39 @@ const UsersPanel = () => {
   const [isUserFormOpen, setIsUserFormOpen] = useState(false);
   const [editUser, setEditUser] = useState(null);
   const [confirmUser, setConfirmUser] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm.trim());
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
 
   const fetchUsers = useCallback(async () => {
     setIsLoading(true);
     try {
-      const { data } = await api.get("/users");
+      const params = {};
+
+      if (debouncedSearchTerm) {
+        params.search = debouncedSearchTerm;
+      }
+
+      if (roleFilter && roleFilter !== "all") {
+        params.role = roleFilter;
+      }
+
+      const { data } = await api.get("/users", { params });
       setUsers(data.data);
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to load users.",
-      );
+      toast.error(error.response?.data?.message || "Failed to load users.");
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [debouncedSearchTerm, roleFilter]);
 
   useEffect(() => {
     fetchUsers();
@@ -71,9 +90,7 @@ const UsersPanel = () => {
       );
       fetchUsers();
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || `Failed to ${verb} user.`,
-      );
+      toast.error(error.response?.data?.message || `Failed to ${verb} user.`);
     } finally {
       setIsDisabling(false);
       setConfirmUser(null);
@@ -101,6 +118,41 @@ const UsersPanel = () => {
       </div>
 
       <div className="admin-table-card">
+        <div className="admin-products-toolbar">
+          <div className="admin-search-wrapper">
+            <input
+              type="text"
+              className="admin-form-control"
+              placeholder="Search by first or last name"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              aria-label="Search users by name"
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                className="admin-search-clear"
+                onClick={() => setSearchTerm("")}
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          <select
+            className="admin-form-control"
+            value={roleFilter}
+            onChange={(event) => setRoleFilter(event.target.value)}
+            aria-label="Filter users by role"
+          >
+            <option value="all">All users</option>
+            <option value="admin">Admin</option>
+            <option value="staff">Staff</option>
+            <option value="disabled">Disabled</option>
+          </select>
+        </div>
+
         <div className="admin-table-head admin-users-grid">
           <span>Name</span>
           <span>Email</span>
@@ -108,9 +160,7 @@ const UsersPanel = () => {
           <span>Actions</span>
         </div>
 
-        {isLoading && (
-          <div className="admin-table-empty">Loading users...</div>
-        )}
+        {isLoading && <div className="admin-table-empty">Loading users...</div>}
 
         {!isLoading && users.length === 0 && (
           <div className="admin-table-empty">No users found.</div>
@@ -118,7 +168,10 @@ const UsersPanel = () => {
 
         {!isLoading &&
           users.map((user) => (
-            <div key={getUserId(user)} className="admin-table-row admin-users-grid">
+            <div
+              key={getUserId(user)}
+              className="admin-table-row admin-users-grid"
+            >
               <span>
                 {user.firstName} {user.lastName}
               </span>

@@ -13,18 +13,39 @@ const ProductsPanel = () => {
   const [isProductFormOpen, setIsProductFormOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [confirmAction, setConfirmAction] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm.trim());
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
 
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
     try {
-      const { data } = await api.get("/products");
+      const params = {};
+
+      if (debouncedSearchTerm) {
+        params.search = debouncedSearchTerm;
+      }
+
+      if (statusFilter && statusFilter !== "all") {
+        params.status = statusFilter;
+      }
+
+      const { data } = await api.get("/products", { params });
       setProducts(data.data || []);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to load products.");
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [debouncedSearchTerm, statusFilter]);
 
   useEffect(() => {
     fetchProducts();
@@ -87,11 +108,38 @@ const ProductsPanel = () => {
     }
   };
 
+  const handleUnpublishProduct = async (product) => {
+    const productId = getProductId(product);
+    if (!productId) {
+      toast.error("Unable to identify product.");
+      return;
+    }
+
+    try {
+      setIsActioning(true);
+      await api.patch(`/products/${productId}/unpublish`);
+      toast.success("Product unpublished successfully.");
+      fetchProducts();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to unpublish product.",
+      );
+    } finally {
+      setIsActioning(false);
+      setConfirmAction(null);
+    }
+  };
+
   const handleConfirmAction = () => {
     if (!confirmAction?.product) return;
 
     if (confirmAction.type === "publish") {
       handlePublishDraft(confirmAction.product);
+      return;
+    }
+
+    if (confirmAction.type === "unpublish") {
+      handleUnpublishProduct(confirmAction.product);
       return;
     }
 
@@ -142,6 +190,40 @@ const ProductsPanel = () => {
       </div>
 
       <div className="admin-table-card">
+        <div className="admin-products-toolbar">
+          <div className="admin-search-wrapper">
+            <input
+              type="text"
+              className="admin-form-control"
+              placeholder="Search by product name"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              aria-label="Search products by name"
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                className="admin-search-clear"
+                onClick={() => setSearchTerm("")}
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          <select
+            className="admin-form-control"
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+            aria-label="Filter products by status"
+          >
+            <option value="all">All statuses</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+          </select>
+        </div>
+
         <div className="admin-table-head">
           <span>Product</span>
           <span>Status</span>
@@ -194,6 +276,19 @@ const ProductsPanel = () => {
                     <i className="bi bi-upload"></i>
                   </button>
                 )}
+                {product.isPublished && (
+                  <button
+                    type="button"
+                    className="admin-icon-btn"
+                    title="Unpublish product"
+                    aria-label="Unpublish product"
+                    onClick={() =>
+                      setConfirmAction({ type: "unpublish", product })
+                    }
+                  >
+                    <i className="bi bi-download"></i>
+                  </button>
+                )}
                 <button
                   type="button"
                   className="admin-icon-btn admin-icon-btn-danger"
@@ -218,18 +313,32 @@ const ProductsPanel = () => {
       <ConfirmModal
         isOpen={!!confirmAction}
         title={
-          confirmAction?.type === "publish" ? "Publish Draft" : "Delete Product"
+          confirmAction?.type === "publish"
+            ? "Publish Draft"
+            : confirmAction?.type === "unpublish"
+              ? "Unpublish Product"
+              : "Delete Product"
         }
         message={
           confirmAction?.type === "publish"
             ? `Are you sure you want to publish draft product "${confirmAction?.product?.name || "Untitled draft"}"?`
-            : `Are you sure you want to delete product "${confirmAction?.product?.name || "Untitled draft"}"?`
+            : confirmAction?.type === "unpublish"
+              ? `Are you sure you want to unpublish product "${confirmAction?.product?.name || "Untitled draft"}"?`
+              : `Are you sure you want to delete product "${confirmAction?.product?.name || "Untitled draft"}"?`
         }
         confirmLabel={
-          confirmAction?.type === "publish" ? "Yes, publish" : "Yes, delete"
+          confirmAction?.type === "publish"
+            ? "Yes, publish"
+            : confirmAction?.type === "unpublish"
+              ? "Yes, unpublish"
+              : "Yes, delete"
         }
         confirmVariant={
-          confirmAction?.type === "publish" ? "primary" : "danger"
+          confirmAction?.type === "publish"
+            ? "primary"
+            : confirmAction?.type === "unpublish"
+              ? "secondary"
+              : "danger"
         }
         onConfirm={handleConfirmAction}
         onCancel={() => !isActioning && setConfirmAction(null)}
