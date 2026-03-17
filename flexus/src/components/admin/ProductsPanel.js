@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import api from "../../api/api";
 import ProductFormModal from "./ProductFormModal";
 import ConfirmModal from "./ConfirmModal";
+import AdminTableSkeleton from "./AdminTableSkeleton";
 
 const getProductId = (product) => product?.id || product?._id;
 
@@ -16,6 +17,15 @@ const ProductsPanel = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 20,
+    total: 0,
+    totalPages: 1,
+    hasPrevious: false,
+    hasNext: false,
+  });
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -25,30 +35,38 @@ const ProductsPanel = () => {
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
 
-  const fetchProducts = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const params = {};
+  const fetchProducts = useCallback(
+    async (nextPage = 1) => {
+      setIsLoading(true);
+      try {
+        const params = { page: nextPage, limit: 20 };
 
-      if (debouncedSearchTerm) {
-        params.search = debouncedSearchTerm;
+        if (debouncedSearchTerm) {
+          params.search = debouncedSearchTerm;
+        }
+
+        if (statusFilter && statusFilter !== "all") {
+          params.status = statusFilter;
+        }
+
+        const { data } = await api.get("/products", { params });
+        setProducts(data.data || []);
+        setPagination(data.pagination || pagination);
+        setPage(nextPage);
+      } catch (error) {
+        toast.error(
+          error.response?.data?.message || "Failed to load products.",
+        );
+      } finally {
+        setIsLoading(false);
       }
-
-      if (statusFilter && statusFilter !== "all") {
-        params.status = statusFilter;
-      }
-
-      const { data } = await api.get("/products", { params });
-      setProducts(data.data || []);
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to load products.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [debouncedSearchTerm, statusFilter]);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [debouncedSearchTerm, statusFilter],
+  );
 
   useEffect(() => {
-    fetchProducts();
+    fetchProducts(1);
   }, [fetchProducts]);
 
   const handleOpenAdd = () => {
@@ -154,10 +172,10 @@ const ProductsPanel = () => {
   };
 
   const handleFormSuccess = () => {
-    fetchProducts();
+    fetchProducts(page);
   };
 
-  const totalProducts = products.length;
+  const totalProducts = pagination.total;
   const draftProducts = products.filter(
     (product) => !product.isPublished,
   ).length;
@@ -231,9 +249,7 @@ const ProductsPanel = () => {
           <span>Actions</span>
         </div>
 
-        {isLoading && (
-          <div className="admin-table-empty">Loading products...</div>
-        )}
+        {isLoading && <AdminTableSkeleton columns={4} rows={6} />}
 
         {!isLoading && products.length === 0 && (
           <div className="admin-table-empty">No products found.</div>
@@ -301,6 +317,30 @@ const ProductsPanel = () => {
               </div>
             </div>
           ))}
+
+        {!isLoading && pagination.total > 0 && (
+          <div className="admin-pagination-row">
+            <button
+              type="button"
+              className="btn btn-outline-secondary btn-sm"
+              onClick={() => fetchProducts(page - 1)}
+              disabled={!pagination.hasPrevious}
+            >
+              Previous
+            </button>
+            <span className="admin-pagination-meta">
+              Page {pagination.page} of {pagination.totalPages}
+            </span>
+            <button
+              type="button"
+              className="btn btn-outline-secondary btn-sm"
+              onClick={() => fetchProducts(page + 1)}
+              disabled={!pagination.hasNext}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
 
       <ProductFormModal
@@ -332,6 +372,13 @@ const ProductsPanel = () => {
             : confirmAction?.type === "unpublish"
               ? "Yes, unpublish"
               : "Yes, delete"
+        }
+        loadingLabel={
+          confirmAction?.type === "publish"
+            ? "Publishing..."
+            : confirmAction?.type === "unpublish"
+              ? "Unpublishing..."
+              : "Deleting..."
         }
         confirmVariant={
           confirmAction?.type === "publish"

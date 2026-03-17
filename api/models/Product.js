@@ -74,6 +74,15 @@ const productSchema = new Schema(
       required: false,
       trim: true,
     },
+    tags: {
+      type: [String],
+      required: false,
+      default: [],
+    },
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
     isPublished: {
       type: Boolean,
       default: false,

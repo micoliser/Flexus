@@ -1,4 +1,4 @@
-import { mg, MAILGUN_DOMAIN, COMPANY_EMAIL } from "../config/mailgun.js";
+import { transporter, COMPANY_EMAIL, FROM_NAME } from "../config/mail.js";
 
 /**
  * Email service for sending various types of emails
@@ -10,16 +10,22 @@ class EmailService {
    * @param {string} data.name - Sender's name
    * @param {string} data.email - Sender's email
    * @param {string} data.message - Message content
+   * @param {string} data.cc - CC recipients (comma-separated)
    */
-  async sendContactEmail({ name, email, message }) {
+  async sendContactEmail({ name, email, message, cc }) {
     const emailData = {
-      from: `Flexus Website <mail@${MAILGUN_DOMAIN}>`,
+      from: `${FROM_NAME} <${COMPANY_EMAIL}>`,
       to: COMPANY_EMAIL,
+      replyTo: email,
       subject: `New Contact Message from ${name}`,
       html: this._generateContactEmailTemplate({ name, email, message }),
     };
 
-    return await mg.messages.create(MAILGUN_DOMAIN, emailData);
+    if (cc) {
+      emailData.cc = cc;
+    }
+
+    return await transporter.sendMail(emailData);
   }
 
   /**
@@ -32,6 +38,7 @@ class EmailService {
    * @param {string} data.country - Customer's country
    * @param {string} data.productName - Product name
    * @param {string} data.note - Additional note (optional)
+   * @param {string} data.cc - CC recipients (comma-separated)
    */
   async sendQuoteEmail({
     firstName,
@@ -41,11 +48,12 @@ class EmailService {
     country,
     productName,
     note,
+    cc,
   }) {
     const emailData = {
-      from: `Flexus Website <mail@${MAILGUN_DOMAIN}>`,
+      from: `${FROM_NAME} <${COMPANY_EMAIL}>`,
       to: COMPANY_EMAIL,
-      // cc: "petersonpaul@flexussolutions.com, joeliheanacho@flexussolutions.com", // Temporarily disabled for testing
+      replyTo: email,
       subject: `New Quote Request for ${productName} - ${firstName} ${lastName}`,
       html: this._generateQuoteEmailTemplate({
         firstName,
@@ -58,7 +66,11 @@ class EmailService {
       }),
     };
 
-    return await mg.messages.create(MAILGUN_DOMAIN, emailData);
+    if (cc) {
+      emailData.cc = cc;
+    }
+
+    return await transporter.sendMail(emailData);
   }
 
   /**

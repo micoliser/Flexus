@@ -3,6 +3,7 @@ const ConfirmModal = ({
   title = "Confirm Action",
   message,
   confirmLabel = "Confirm",
+  loadingLabel = "Working...",
   cancelLabel = "Cancel",
   onConfirm,
   onCancel,
@@ -46,11 +47,14 @@ const ConfirmModal = ({
             type="button"
             className={`btn ${
               confirmVariant === "primary" ? "btn-brand-primary" : "btn-danger"
-            }`}
+            } admin-btn-with-spinner`}
             onClick={onConfirm}
             disabled={isLoading}
           >
-            {isLoading ? "Please wait..." : confirmLabel}
+            {isLoading && (
+              <span className="admin-btn-spinner" aria-hidden="true"></span>
+            )}
+            <span>{isLoading ? loadingLabel : confirmLabel}</span>
           </button>
         </div>
       </div>

@@ -15,6 +15,13 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
+    if (config.skipAuth === true) {
+      if (config.headers?.Authorization) {
+        delete config.headers.Authorization;
+      }
+      return config;
+    }
+
     const token = localStorage.getItem("accessToken");
 
     if (token) {
@@ -35,11 +42,13 @@ api.interceptors.response.use(
 
     const isAuthFailure = status === 401 || status === 403;
     const isLoginRequest = requestUrl.includes("/users/login");
+    const isPublicRequest = error?.config?.skipAuth === true;
 
     if (
       hasStoredToken &&
       isAuthFailure &&
       !isLoginRequest &&
+      !isPublicRequest &&
       authFailureHandler
     ) {
       const message =

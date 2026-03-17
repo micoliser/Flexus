@@ -122,7 +122,9 @@ const UserFormModal = ({ isOpen, onClose, onSuccess, user = null }) => {
       >
         <div className="admin-modal-header">
           <div>
-            <h3 className="admin-modal-title">{isEditMode ? "Edit User" : "Add User"}</h3>
+            <h3 className="admin-modal-title">
+              {isEditMode ? "Edit User" : "Add User"}
+            </h3>
             <p className="admin-modal-subtitle">
               {isEditMode
                 ? "Update this user's information."
@@ -203,7 +205,11 @@ const UserFormModal = ({ isOpen, onClose, onSuccess, user = null }) => {
               className={`admin-form-control ${errors.password ? "is-invalid" : ""}`}
               value={formData.password}
               onChange={handleChange}
-              placeholder={isEditMode ? "Leave blank to keep current password" : "Eg Min 8 characters"}
+              placeholder={
+                isEditMode
+                  ? "Leave blank to keep current password"
+                  : "Eg Min 8 characters"
+              }
             />
             {errors.password && (
               <p className="admin-form-error">{errors.password}</p>
@@ -245,10 +251,21 @@ const UserFormModal = ({ isOpen, onClose, onSuccess, user = null }) => {
             </button>
             <button
               type="submit"
-              className="btn btn-brand-primary"
+              className="btn btn-brand-primary admin-btn-with-spinner"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Saving..." : isEditMode ? "Update User" : "Save User"}
+              {isSubmitting && (
+                <span className="admin-btn-spinner" aria-hidden="true"></span>
+              )}
+              <span>
+                {isSubmitting
+                  ? isEditMode
+                    ? "Updating..."
+                    : "Saving..."
+                  : isEditMode
+                    ? "Update User"
+                    : "Save User"}
+              </span>
             </button>
           </div>
         </form>

@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import api from "../../api/api";
 import UserFormModal from "./UserFormModal";
 import ConfirmModal from "./ConfirmModal";
+import AdminTableSkeleton from "./AdminTableSkeleton";
 
 const getRolePill = (user) => {
   if (user.isDisabled)
@@ -160,7 +161,13 @@ const UsersPanel = () => {
           <span>Actions</span>
         </div>
 
-        {isLoading && <div className="admin-table-empty">Loading users...</div>}
+        {isLoading && (
+          <AdminTableSkeleton
+            gridClass="admin-users-grid"
+            columns={4}
+            rows={6}
+          />
+        )}
 
         {!isLoading && users.length === 0 && (
           <div className="admin-table-empty">No users found.</div>
@@ -221,6 +228,7 @@ const UsersPanel = () => {
             : ""
         }
         confirmLabel={confirmUser?.isDisabled ? "Yes, enable" : "Yes, disable"}
+        loadingLabel={confirmUser?.isDisabled ? "Enabling..." : "Disabling..."}
         onConfirm={() => confirmUser && handleDisable(confirmUser)}
         onCancel={() => !isDisabling && setConfirmUser(null)}
         isLoading={isDisabling}

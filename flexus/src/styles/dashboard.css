@@ -323,6 +323,56 @@
   border-bottom: none;
 }
 
+.admin-skeleton-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 190px;
+  gap: 0.75rem;
+  margin-bottom: 0.8rem;
+}
+
+.admin-skeleton-block {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #e9efec;
+}
+
+.admin-skeleton-block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: admin-skeleton-shimmer 1.25s infinite;
+}
+
+.admin-skeleton-input,
+.admin-skeleton-select {
+  height: 44px;
+}
+
+.admin-skeleton-text {
+  height: 15px;
+}
+
+.admin-skeleton-pill {
+  height: 22px;
+  border-radius: 999px;
+  width: 72%;
+}
+
+@keyframes admin-skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 .admin-users-grid {
   grid-template-columns: 1.4fr 1.8fr 1fr 1fr;
 }
@@ -546,6 +596,34 @@
 .admin-form-control.is-invalid:focus {
   border-color: #dc3545;
   box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.16);
+}
+
+.admin-btn-with-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.admin-btn-spinner {
+  width: 0.9rem;
+  height: 0.9rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: admin-btn-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+.btn.admin-btn-with-spinner:disabled {
+  opacity: 1;
+  filter: none;
+}
+
+@keyframes admin-btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .admin-form-error {
@@ -819,6 +897,10 @@
   color: #f8f9fa;
 }
 
+.dark-mode .btn.admin-btn-with-spinner:disabled {
+  opacity: 1;
+}
+
 .dark-mode .admin-form-error {
   color: #f2a1ab;
 }
@@ -864,6 +946,19 @@
 .dark-mode .admin-table-row,
 .dark-mode .admin-log-item {
   border-bottom-color: #343a3d;
+}
+
+.dark-mode .admin-skeleton-block {
+  background: #384042;
+}
+
+.dark-mode .admin-skeleton-block::after {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
 }
 
 .dark-mode .admin-pill-live {
@@ -988,6 +1083,10 @@
   }
 
   .admin-products-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-skeleton-toolbar {
     grid-template-columns: 1fr;
   }
 

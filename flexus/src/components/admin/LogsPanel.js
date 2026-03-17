@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import api from "../../api/api";
+import AdminTableSkeleton from "./AdminTableSkeleton";
 
 const LogsPanel = () => {
   const [logs, setLogs] = useState([]);
@@ -175,7 +176,13 @@ const LogsPanel = () => {
           <span>Status</span>
         </div>
 
-        {isLoading && <div className="admin-table-empty">Loading logs...</div>}
+        {isLoading && (
+          <AdminTableSkeleton
+            gridClass="admin-logs-grid"
+            columns={5}
+            rows={8}
+          />
+        )}
 
         {!isLoading && logs.length === 0 && (
           <div className="admin-table-empty">No logs found.</div>

@@ -7,6 +7,7 @@ import "./styles/contact.css";
 import "./styles/about.css";
 import "./styles/dashboard.css";
 import "./styles/login.css";
+import "./styles/notFound.css";
 import App from "./components/App";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

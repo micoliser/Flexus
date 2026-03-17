@@ -22,6 +22,7 @@ import About from "../pages/About";
 import ProductDetails from "../pages/ProductDetails";
 import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
+import NotFound from "../pages/NotFound";
 
 const ScrollToTop = () => {
   const location = useLocation();
@@ -109,6 +110,7 @@ const AppShell = () => {
             <Route path="/products" element={<Products />} />
             <Route path="/products/:id" element={<ProductDetails />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
           <Route
             path="/admin/login"

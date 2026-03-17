@@ -17,6 +17,8 @@ const PUBLISH_REQUIRED_FIELDS = [
 ];
 const MAX_OTHER_IMAGES = 10;
 
+const isValidObjectId = (value) => /^[a-fA-F0-9]{24}$/.test(String(value));
+
 const normalizeListField = (value) => {
   if (Array.isArray(value)) {
     return value.map((item) => String(item).trim()).filter(Boolean);
@@ -34,6 +36,18 @@ const normalizeListField = (value) => {
 
 const normalizeImageListField = (value) => {
   return [...new Set(normalizeListField(value))];
+};
+
+const normalizeBooleanField = (value) => {
+  if (typeof value === "boolean") return value;
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "true") return true;
+    if (normalized === "false") return false;
+  }
+
+  return Boolean(value);
 };
 
 const isHttpUrl = (value) => {
@@ -187,6 +201,10 @@ const normalizePayload = (body = {}) => ({
   ...(body.exportMarkets !== undefined
     ? { exportMarkets: normalizeListField(body.exportMarkets) }
     : {}),
+  ...(body.tags !== undefined ? { tags: normalizeListField(body.tags) } : {}),
+  ...(body.isFeatured !== undefined
+    ? { isFeatured: normalizeBooleanField(body.isFeatured) }
+    : {}),
 });
 
 const validateForPublish = (payload = {}) => {
@@ -231,11 +249,18 @@ const hasAtLeastOneDraftField = (payload = {}) => {
     Array.isArray(payload.certifications) && payload.certifications.length > 0;
   const hasExportMarkets =
     Array.isArray(payload.exportMarkets) && payload.exportMarkets.length > 0;
+  const hasTags = Array.isArray(payload.tags) && payload.tags.length > 0;
   const hasOtherImages =
     Array.isArray(payload.otherImages) && payload.otherImages.length > 0;
+  const isFeatured = payload.isFeatured === true;
 
   return (
-    hasStringValue || hasCertifications || hasExportMarkets || hasOtherImages
+    hasStringValue ||
+    hasCertifications ||
+    hasExportMarkets ||
+    hasTags ||
+    hasOtherImages ||
+    isFeatured
   );
 };
 
@@ -301,7 +326,19 @@ class ProductController {
   // GET /api/v1/products
   static async getAllProducts(req, res, next) {
     try {
+      const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+      const limit = Math.min(
+        Math.max(parseInt(req.query.limit, 10) || 20, 1),
+        100,
+      );
+      const skip = (page - 1) * limit;
+
       const { search = "", status } = req.query;
+      const prioritizeFeatured =
+        String(req.query.prioritizeFeatured || "")
+          .trim()
+          .toLowerCase() === "true";
+      const excludeId = String(req.query.excludeId || "").trim();
       const isStaffOrAdmin =
         req.user?.isAdmin === true || req.user?.isStaff === true;
 
@@ -312,33 +349,59 @@ class ProductController {
         query.name = { $regex: trimmedSearch, $options: "i" };
       }
 
+      if (excludeId && isValidObjectId(excludeId)) {
+        query._id = { $ne: excludeId };
+      }
+
       if (status !== undefined && status !== "") {
-        if (!isStaffOrAdmin) {
+        const normalizedStatus = String(status).trim().toLowerCase();
+
+        if (!["published", "draft", "all"].includes(normalizedStatus)) {
+          return res.status(400).json({
+            success: false,
+            message: "Invalid status filter. Use published, draft, or all.",
+          });
+        }
+
+        if (!isStaffOrAdmin && normalizedStatus !== "published") {
           return res.status(403).json({
             success: false,
             message: "Status filter is only available to staff or admin users.",
           });
         }
 
-        const normalizedStatus = String(status).trim().toLowerCase();
         if (normalizedStatus === "published") {
           query.isPublished = true;
         } else if (normalizedStatus === "draft") {
           query.isPublished = false;
-        } else if (normalizedStatus === "all") {
-          // no status filter
-        } else {
-          return res.status(400).json({
-            success: false,
-            message: "Invalid status filter. Use published, draft, or all.",
-          });
         }
       } else if (!isStaffOrAdmin) {
         query.isPublished = true;
       }
 
-      const products = await Product.find(query).sort({ createdAt: -1 });
-      res.json({ success: true, data: products });
+      const sort = prioritizeFeatured
+        ? { isFeatured: -1, updatedAt: -1, createdAt: -1 }
+        : { createdAt: -1 };
+
+      const [products, total] = await Promise.all([
+        Product.find(query).sort(sort).skip(skip).limit(limit),
+        Product.countDocuments(query),
+      ]);
+
+      const totalPages = Math.max(Math.ceil(total / limit), 1);
+
+      res.json({
+        success: true,
+        data: products,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+          hasPrevious: page > 1,
+          hasNext: page < totalPages,
+        },
+      });
     } catch (error) {
       next(error);
     }
@@ -347,14 +410,38 @@ class ProductController {
   // GET /api/v1/products/:id
   static async getProductById(req, res, next) {
     try {
-      const product = await Product.findById(req.params.id);
+      const productId = String(req.params.id || "").trim();
+
+      if (!isValidObjectId(productId)) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Product not found" });
+      }
+
+      const product = await Product.findById(productId);
       if (!product) {
         return res
           .status(404)
           .json({ success: false, message: "Product not found" });
       }
+
+      const isStaffOrAdmin =
+        req.user?.isAdmin === true || req.user?.isStaff === true;
+
+      if (!product.isPublished && !isStaffOrAdmin) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Product not found" });
+      }
+
       res.json({ success: true, data: product });
     } catch (error) {
+      if (error?.name === "CastError" && error?.path === "_id") {
+        return res
+          .status(404)
+          .json({ success: false, message: "Product not found" });
+      }
+
       next(error);
     }
   }

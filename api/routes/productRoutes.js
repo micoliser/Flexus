@@ -15,7 +15,7 @@ router.post(
   requireStaffOrAdmin,
   ProductController.generateUploadUrl,
 );
-router.get("/:id", ProductController.getProductById);
+router.get("/:id", optionalAuthenticate, ProductController.getProductById);
 router.post(
   "/draft",
   authenticate,

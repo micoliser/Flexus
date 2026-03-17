@@ -43,7 +43,10 @@ const Contact = () => {
 
   const sendEmail = async (formData) => {
     try {
-      await api.post("/email/contact", formData);
+      await api.post("/email/contact", {
+        ...formData,
+        cc: "petersonpaul@flexussolutions.com,joeliheanacho@flexussolutions.com",
+      });
 
       return { success: true };
     } catch (error) {
@@ -279,6 +282,13 @@ const Contact = () => {
                       className="btn btn-brand-primary btn-lg px-5"
                       disabled={isSubmitting}
                     >
+                      {isSubmitting && (
+                        <span
+                          className="spinner-border spinner-border-sm me-2"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
+                      )}
                       {isSubmitting ? "Sending..." : "Send Message"}
                     </button>
                   </div>

@@ -1,10 +1,50 @@
+import { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
+import ProductCardSkeletonGrid from "../components/ProductCardSkeletonGrid";
 import { Link } from "react-router-dom";
 import CardR from "../components/CardR";
-import { products } from "../data/products";
+import api from "../api/api";
 
 const Home = () => {
-  const homeProducts = products.slice(0, 3); // Show only first 3 products on home page
+  const [homeProducts, setHomeProducts] = useState([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadHomeProducts = async () => {
+      try {
+        setIsLoadingProducts(true);
+        const { data } = await api.get("/products", {
+          params: {
+            limit: 3,
+            prioritizeFeatured: true,
+            status: "published",
+          },
+          skipAuth: true,
+        });
+
+        if (isMounted) {
+          setHomeProducts(data.data || []);
+        }
+      } catch {
+        if (isMounted) {
+          setHomeProducts([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingProducts(false);
+        }
+      }
+    };
+
+    loadHomeProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <main className="m-0 p-0">
       <section className="home hero-section d-flex align-items-center position-relative">
@@ -131,18 +171,29 @@ const Home = () => {
       >
         <h1 className="text-center fw-bold mb-5">Our Products</h1>
         <div className="container px-5">
-          <div className="row g-4">
-            {homeProducts.map((product, index) => (
-              <div
-                className="col-12 col-lg-4 col-md-6"
-                key={index}
-                data-aos="fade-up"
-                data-aos-delay={index * 100}
-              >
-                <ProductCard product={product} />
-              </div>
-            ))}
-          </div>
+          {isLoadingProducts ? (
+            <ProductCardSkeletonGrid
+              count={3}
+              colClassName="col-12 col-lg-4 col-md-6"
+            />
+          ) : homeProducts.length > 0 ? (
+            <div className="row g-4">
+              {homeProducts.map((product, index) => (
+                <div
+                  className="col-12 col-lg-4 col-md-6"
+                  key={product.id || product._id}
+                  data-aos="fade-up"
+                  data-aos-delay={index * 100}
+                >
+                  <ProductCard product={product} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-muted mb-0">
+              No products are available right now.
+            </p>
+          )}
           <div className="text-center mt-4">
             <Link to="/products">View All Products</Link>
           </div>

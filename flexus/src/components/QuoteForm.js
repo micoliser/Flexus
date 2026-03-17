@@ -125,6 +125,7 @@ const QuoteForm = ({ isOpen, productName, onClose }) => {
         country: formData.country,
         productName: productName,
         note: formData.note,
+        cc: "petersonpaul@flexussolutions.com,joeliheanacho@flexussolutions.com",
       });
 
       if (data.success) {
@@ -307,6 +308,13 @@ const QuoteForm = ({ isOpen, productName, onClose }) => {
               className="btn btn-brand-primary"
               disabled={isSubmitting}
             >
+              {isSubmitting && (
+                <span
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+              )}
               {isSubmitting ? "Submitting..." : "Submit Request"}
             </button>
           </div>

@@ -15,8 +15,10 @@ const initialProductForm = {
   packaging: "",
   shelfLife: "",
   certifications: "",
+  tags: "",
   exportMarkets: "",
   availability: "",
+  isFeatured: false,
 };
 
 const PUBLISH_REQUIRED_FIELDS = [
@@ -82,6 +84,7 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
   const [formData, setFormData] = useState(initialProductForm);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitAction, setSubmitAction] = useState("");
   const [showDraftConfirm, setShowDraftConfirm] = useState(false);
   const [existingOtherImages, setExistingOtherImages] = useState([]);
   const [otherImageFiles, setOtherImageFiles] = useState([]);
@@ -107,10 +110,12 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
         certifications: Array.isArray(product.certifications)
           ? product.certifications.join(", ")
           : "",
+        tags: Array.isArray(product.tags) ? product.tags.join(", ") : "",
         exportMarkets: Array.isArray(product.exportMarkets)
           ? product.exportMarkets.join(", ")
           : "",
         availability: product.availability || "",
+        isFeatured: product.isFeatured === true,
       });
       setExistingOtherImages(
         Array.isArray(product.otherImages)
@@ -130,6 +135,7 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
 
     setErrors({});
     setShowDraftConfirm(false);
+    setSubmitAction("");
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -203,8 +209,10 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
     packaging: formData.packaging.trim(),
     shelfLife: formData.shelfLife.trim(),
     certifications: formData.certifications,
+    tags: formData.tags,
     exportMarkets: formData.exportMarkets,
     availability: formData.availability.trim(),
+    isFeatured: formData.isFeatured,
   });
 
   const validateForPublish = () => {
@@ -232,8 +240,13 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
   };
 
   const handleChange = ({ target }) => {
-    const { name, value, type, files } = target;
-    const newValue = type === "file" ? (files && files[0]) || null : value;
+    const { name, value, type, files, checked } = target;
+    const newValue =
+      type === "file"
+        ? (files && files[0]) || null
+        : type === "checkbox"
+          ? checked
+          : value;
     setFormData((prev) => ({ ...prev, [name]: newValue }));
 
     if (errors[name]) {
@@ -392,10 +405,15 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
 
   const closeModal = () => {
     setShowDraftConfirm(false);
+    setSubmitAction("");
     onClose();
   };
 
-  const saveDraft = async () => {
+  const isActionSubmitting = (actionKey) => {
+    return isSubmitting && submitAction === actionKey;
+  };
+
+  const saveDraft = async (actionKey = "save-draft") => {
     if (isSubmitting) return;
     if (!validateUploadedImages()) return;
 
@@ -405,6 +423,7 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
       return;
     }
 
+    setSubmitAction(actionKey);
     setIsSubmitting(true);
 
     try {
@@ -435,14 +454,16 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
     } finally {
       setIsSubmitting(false);
       setShowDraftConfirm(false);
+      setSubmitAction("");
     }
   };
 
-  const publishProduct = async () => {
+  const publishProduct = async (actionKey = "publish-product") => {
     if (isSubmitting) return;
     if (!validateUploadedImages()) return;
     if (!validateForPublish()) return;
 
+    setSubmitAction(actionKey);
     setIsSubmitting(true);
 
     try {
@@ -483,6 +504,7 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
       }
     } finally {
       setIsSubmitting(false);
+      setSubmitAction("");
     }
   };
 
@@ -497,10 +519,14 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (isEditMode && !product?.isPublished) {
-      saveDraft();
+      saveDraft("submit-update-draft");
       return;
     }
-    publishProduct();
+    publishProduct(
+      isEditMode && product?.isPublished
+        ? "submit-update-product"
+        : "submit-publish-product",
+    );
   };
 
   return (
@@ -871,6 +897,24 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
           </div>
 
           <div className="admin-form-group admin-form-group-full">
+            <label htmlFor="product-tags" className="admin-form-label">
+              Tags (Optional)
+            </label>
+            <input
+              id="product-tags"
+              name="tags"
+              className="admin-form-control"
+              value={formData.tags}
+              onChange={handleChange}
+              placeholder="Eg nuts, organic, wholesale (comma separated)"
+            />
+            <p className="admin-form-info">
+              Tags are used to suggest related products on the public product
+              details page.
+            </p>
+          </div>
+
+          <div className="admin-form-group admin-form-group-full">
             <label htmlFor="product-exportMarkets" className="admin-form-label">
               Export Markets *
             </label>
@@ -904,6 +948,26 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
             )}
           </div>
 
+          <div className="admin-form-group admin-form-group-full">
+            <label className="admin-form-label">Homepage Visibility</label>
+            <div className="admin-checkbox-grid">
+              <label className="admin-checkbox-card">
+                <input
+                  type="checkbox"
+                  name="isFeatured"
+                  checked={formData.isFeatured}
+                  onChange={handleChange}
+                />
+                <span>Feature on home page</span>
+              </label>
+            </div>
+            <p className="admin-form-info">
+              Featured published products are shown first on the home page. If
+              there are fewer than 3 featured products, the newest published
+              products are used as fallback.
+            </p>
+          </div>
+
           <div className="admin-form-actions admin-form-group-full">
             <button
               type="button"
@@ -917,37 +981,62 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
             {!isEditMode && (
               <button
                 type="button"
-                className="btn btn-outline-primary"
-                onClick={() => saveDraft()}
+                className="btn btn-outline-primary admin-btn-with-spinner"
+                onClick={() => saveDraft("save-draft-button")}
                 disabled={isSubmitting}
               >
-                Save Draft
+                {isActionSubmitting("save-draft-button") && (
+                  <span className="admin-btn-spinner" aria-hidden="true"></span>
+                )}
+                <span>
+                  {isActionSubmitting("save-draft-button")
+                    ? "Saving Draft..."
+                    : "Save Draft"}
+                </span>
               </button>
             )}
 
             {isEditMode && !product?.isPublished && (
               <button
                 type="button"
-                className="btn btn-brand-secondary"
-                onClick={publishProduct}
+                className="btn btn-brand-secondary admin-btn-with-spinner"
+                onClick={() => publishProduct("publish-draft-button")}
                 disabled={isSubmitting}
               >
-                Publish Draft
+                {isActionSubmitting("publish-draft-button") && (
+                  <span className="admin-btn-spinner" aria-hidden="true"></span>
+                )}
+                <span>
+                  {isActionSubmitting("publish-draft-button")
+                    ? "Publishing Draft..."
+                    : "Publish Draft"}
+                </span>
               </button>
             )}
 
             <button
               type="submit"
-              className="btn btn-brand-primary"
+              className="btn btn-brand-primary admin-btn-with-spinner"
               disabled={isSubmitting}
             >
-              {isSubmitting
-                ? "Please wait..."
-                : isEditMode
-                  ? product?.isPublished
-                    ? "Update Product"
-                    : "Update Draft"
-                  : "Publish Product"}
+              {(isActionSubmitting("submit-update-draft") ||
+                isActionSubmitting("submit-update-product") ||
+                isActionSubmitting("submit-publish-product")) && (
+                <span className="admin-btn-spinner" aria-hidden="true"></span>
+              )}
+              <span>
+                {isActionSubmitting("submit-update-draft")
+                  ? "Updating Draft..."
+                  : isActionSubmitting("submit-update-product")
+                    ? "Updating Product..."
+                    : isActionSubmitting("submit-publish-product")
+                      ? "Publishing Product..."
+                      : isEditMode
+                        ? product?.isPublished
+                          ? "Update Product"
+                          : "Update Draft"
+                        : "Publish Product"}
+              </span>
             </button>
           </div>
         </form>
@@ -997,11 +1086,21 @@ const ProductFormModal = ({ isOpen, onClose, onSuccess, product = null }) => {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-brand-primary"
-                  onClick={saveDraft}
+                  className="btn btn-brand-primary admin-btn-with-spinner"
+                  onClick={() => saveDraft("save-draft-confirm")}
                   disabled={isSubmitting}
                 >
-                  Yes
+                  {isActionSubmitting("save-draft-confirm") && (
+                    <span
+                      className="admin-btn-spinner"
+                      aria-hidden="true"
+                    ></span>
+                  )}
+                  <span>
+                    {isActionSubmitting("save-draft-confirm")
+                      ? "Saving..."
+                      : "Yes"}
+                  </span>
                 </button>
               </div>
             </div>
