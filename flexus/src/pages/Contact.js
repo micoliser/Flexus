@@ -43,11 +43,7 @@ const Contact = () => {
 
   const sendEmail = async (formData) => {
     try {
-      await api.post("/email/contact", {
-        ...formData,
-        cc: "petersonpaul@flexussolutions.com,joeliheanacho@flexussolutions.com",
-      });
-
+      await api.post("/email/contact", formData);
       return { success: true };
     } catch (error) {
       console.error("Email Error:", error);

@@ -1,4 +1,9 @@
-import { transporter, COMPANY_EMAIL, FROM_NAME } from "../config/mail.js";
+import {
+  transporter,
+  COMPANY_EMAIL,
+  FROM_NAME,
+  EMAIL_CC_RECIPIENTS,
+} from "../config/mail.js";
 
 /**
  * Email service for sending various types of emails
@@ -10,9 +15,8 @@ class EmailService {
    * @param {string} data.name - Sender's name
    * @param {string} data.email - Sender's email
    * @param {string} data.message - Message content
-   * @param {string} data.cc - CC recipients (comma-separated)
    */
-  async sendContactEmail({ name, email, message, cc }) {
+  async sendContactEmail({ name, email, message }) {
     const emailData = {
       from: `${FROM_NAME} <${COMPANY_EMAIL}>`,
       to: COMPANY_EMAIL,
@@ -21,8 +25,8 @@ class EmailService {
       html: this._generateContactEmailTemplate({ name, email, message }),
     };
 
-    if (cc) {
-      emailData.cc = cc;
+    if (EMAIL_CC_RECIPIENTS.length > 0) {
+      emailData.cc = EMAIL_CC_RECIPIENTS;
     }
 
     return await transporter.sendMail(emailData);
@@ -38,7 +42,6 @@ class EmailService {
    * @param {string} data.country - Customer's country
    * @param {string} data.productName - Product name
    * @param {string} data.note - Additional note (optional)
-   * @param {string} data.cc - CC recipients (comma-separated)
    */
   async sendQuoteEmail({
     firstName,
@@ -48,7 +51,6 @@ class EmailService {
     country,
     productName,
     note,
-    cc,
   }) {
     const emailData = {
       from: `${FROM_NAME} <${COMPANY_EMAIL}>`,
@@ -66,8 +68,8 @@ class EmailService {
       }),
     };
 
-    if (cc) {
-      emailData.cc = cc;
+    if (EMAIL_CC_RECIPIENTS.length > 0) {
+      emailData.cc = EMAIL_CC_RECIPIENTS;
     }
 
     return await transporter.sendMail(emailData);

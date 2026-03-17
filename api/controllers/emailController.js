@@ -11,7 +11,7 @@ class EmailController {
    */
   static async sendContactEmail(req, res, next) {
     try {
-      const { name, email, message, cc } = req.body;
+      const { name, email, message } = req.body;
 
       // Basic validation
       if (!name || !email || !message) {
@@ -22,7 +22,7 @@ class EmailController {
       }
 
       // Send email via service
-      await emailService.sendContactEmail({ name, email, message, cc });
+      await emailService.sendContactEmail({ name, email, message });
 
       await LogService.createLog({
         action: "email.contact",
@@ -46,16 +46,8 @@ class EmailController {
    */
   static async sendQuoteEmail(req, res, next) {
     try {
-      const {
-        firstName,
-        lastName,
-        email,
-        phone,
-        country,
-        productName,
-        note,
-        cc,
-      } = req.body;
+      const { firstName, lastName, email, phone, country, productName, note } =
+        req.body;
 
       // Basic validation
       if (
@@ -82,7 +74,6 @@ class EmailController {
         country,
         productName,
         note,
-        cc,
       });
 
       await LogService.createLog({

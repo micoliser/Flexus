@@ -32,3 +32,10 @@ export { transporter };
 export const COMPANY_EMAIL =
   process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER;
 export const FROM_NAME = process.env.SMTP_FROM_NAME || "Flexus Solutions";
+export const EMAIL_CC_RECIPIENTS = (
+  process.env.EMAIL_CC_RECIPIENTS ||
+  "petersonpaul@flexussolutions.com,joeliheanacho@flexussolutions.com"
+)
+  .split(",")
+  .map((email) => email.trim())
+  .filter(Boolean);

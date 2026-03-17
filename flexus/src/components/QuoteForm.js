@@ -125,7 +125,6 @@ const QuoteForm = ({ isOpen, productName, onClose }) => {
         country: formData.country,
         productName: productName,
         note: formData.note,
-        cc: "petersonpaul@flexussolutions.com,joeliheanacho@flexussolutions.com",
       });
 
       if (data.success) {
