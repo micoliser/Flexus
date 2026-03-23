@@ -11,9 +11,21 @@ const parseBearerToken = (req) => {
   return token;
 };
 
+const parseAccessToken = (req) => {
+  const bearerToken = parseBearerToken(req);
+  if (bearerToken) return bearerToken;
+
+  const cookieToken = req.cookies?.access_token;
+  if (typeof cookieToken === "string" && cookieToken.trim()) {
+    return cookieToken.trim();
+  }
+
+  return null;
+};
+
 export const authenticate = async (req, res, next) => {
   try {
-    const token = parseBearerToken(req);
+    const token = parseAccessToken(req);
 
     if (!token) {
       return res.status(401).json({
@@ -66,7 +78,7 @@ export const authenticate = async (req, res, next) => {
 
 export const optionalAuthenticate = async (req, _res, next) => {
   try {
-    const token = parseBearerToken(req);
+    const token = parseAccessToken(req);
     if (!token) return next();
 
     const secret = process.env.JWT_SECRET;

@@ -6,27 +6,25 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const isHandlingAuthFailure = useRef(false);
 
-  const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem("user");
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [user, setUser] = useState(null);
+  const [isAuthReady, setIsAuthReady] = useState(false);
 
-  const [token, setToken] = useState(() => {
-    return localStorage.getItem("accessToken") || null;
-  });
-
-  const login = (userData, accessToken) => {
+  const login = (userData) => {
     setUser(userData);
-    setToken(accessToken);
-    localStorage.setItem("user", JSON.stringify(userData));
-    localStorage.setItem("accessToken", accessToken);
   };
 
   const logout = () => {
     setUser(null);
-    setToken(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("accessToken");
+  };
+
+  const logoutWithRequest = async () => {
+    try {
+      await api.post("/users/logout", {}, { skipAuth: true });
+    } catch {
+      // Ignore network/logout errors and always clear local auth state.
+    } finally {
+      logout();
+    }
   };
 
   useEffect(() => {
@@ -35,10 +33,10 @@ export const AuthProvider = ({ children }) => {
 
       isHandlingAuthFailure.current = true;
 
-      logout();
+      logoutWithRequest();
 
       if (message) {
-        localStorage.setItem("authLogoutMessage", message);
+        sessionStorage.setItem("authLogoutMessage", message);
       }
 
       if (window.location.pathname !== "/admin/login") {
@@ -55,25 +53,25 @@ export const AuthProvider = ({ children }) => {
     return () => {
       setAuthFailureHandler(null);
     };
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
-    if (!token) return;
-
     const bootstrapAuth = async () => {
       try {
-        const { data } = await api.get("/users/me");
+        const { data } = await api.get("/users/me", { skipAuth: true });
         setUser(data.data);
-        localStorage.setItem("user", JSON.stringify(data.data));
       } catch {
-        // Interceptor handles logout/redirect centrally.
+        setUser(null);
+      } finally {
+        setIsAuthReady(true);
       }
     };
 
     bootstrapAuth();
-  }, [token]);
+  }, []);
 
-  const isAuthenticated = !!token;
+  const isAuthenticated = !!user;
   const isAdmin = user?.isAdmin === true;
   const isStaff = user?.isStaff === true;
 
@@ -81,10 +79,10 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
-        token,
         login,
-        logout,
+        logout: logoutWithRequest,
         isAuthenticated,
+        isAuthReady,
         isAdmin,
         isStaff,
       }}

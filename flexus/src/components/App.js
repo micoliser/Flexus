@@ -35,7 +35,11 @@ const ScrollToTop = () => {
 };
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAuthReady } = useAuth();
+
+  if (!isAuthReady) {
+    return null;
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/admin/login" replace />;
@@ -45,7 +49,11 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const GuestOnlyRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAuthReady } = useAuth();
+
+  if (!isAuthReady) {
+    return null;
+  }
 
   if (isAuthenticated) {
     return <Navigate to="/admin/dashboard" replace />;

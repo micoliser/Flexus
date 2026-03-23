@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import cors from "cors";
 import helmet from "helmet";
+import cookieParser from "cookie-parser";
 import { connectDB } from "../config/db.js";
 import routes from "../routes/apiRoutes.js";
 import { notFoundHandler, errorHandler } from "../middleware/errorHandler.js";
@@ -23,6 +24,7 @@ if (["1", "true", "yes"].includes(trustProxy)) {
 // Middleware
 app.use(helmet());
 app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use(express.json({ limit: process.env.JSON_BODY_LIMIT || "100kb" }));
 app.use(express.urlencoded({ extended: true, limit: "100kb" }));
 app.use(`/api/${process.env.API_VERSION}`, apiLimiter);

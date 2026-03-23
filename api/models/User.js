@@ -39,6 +39,26 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    refreshSessions: {
+      type: [
+        {
+          tokenHash: {
+            type: String,
+            required: true,
+          },
+          expiresAt: {
+            type: Date,
+            required: true,
+          },
+          createdAt: {
+            type: Date,
+            default: Date.now,
+          },
+        },
+      ],
+      default: [],
+      select: false,
+    },
   },
   {
     timestamps: true,

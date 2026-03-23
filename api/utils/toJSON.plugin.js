@@ -13,6 +13,7 @@ const toJSONPlugin = (schema) => {
       delete ret._id;
       delete ret.__v;
       delete ret.password;
+      delete ret.refreshSessions;
       return ret;
     },
   });

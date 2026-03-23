@@ -21,12 +21,12 @@ const Login = () => {
   const [loginError, setLoginError] = useState("");
 
   useEffect(() => {
-    const logoutMessage = localStorage.getItem("authLogoutMessage");
+    const logoutMessage = sessionStorage.getItem("authLogoutMessage");
 
     if (logoutMessage) {
       setLoginError(logoutMessage);
       toast.error(logoutMessage);
-      localStorage.removeItem("authLogoutMessage");
+      sessionStorage.removeItem("authLogoutMessage");
     }
   }, []);
 
@@ -80,7 +80,7 @@ const Login = () => {
     try {
       const { data } = await api.post("/users/login", formData);
 
-      login(data.data.user, data.data.accessToken);
+      login(data.data.user);
 
       toast.success("Login successful!");
 
