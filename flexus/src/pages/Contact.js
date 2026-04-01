@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import api from "../api/api";
+import Seo from "../components/Seo";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -105,6 +106,12 @@ const Contact = () => {
 
   return (
     <main className="m-0 p-0">
+      <Seo
+        title="Contact Flexus Solutions"
+        description="Contact Flexus Solutions for agricultural export quotes, product availability, and bulk supply inquiries. Reach us by phone, email, or WhatsApp."
+        path="/contact"
+        keywords="contact flexus, agricultural export quote, farm produce inquiry, Nigeria export contact"
+      />
       <section className="contact hero-section d-flex align-items-center position-relative">
         <div className="container">
           <div className="hero-content position-relative text-center text-white">

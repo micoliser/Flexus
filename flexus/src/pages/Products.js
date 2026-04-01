@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import ProductCardSkeletonGrid from "../components/ProductCardSkeletonGrid";
 import api from "../api/api";
+import Seo from "../components/Seo";
 
 const INITIAL_PAGINATION = {
   page: 1,
@@ -101,6 +102,12 @@ const Products = () => {
 
   return (
     <main className="m-0 p-0">
+      <Seo
+        title="Export Products"
+        description="Browse Flexus export-ready agricultural products including cashew nuts, cocoa beans, ginger, turmeric, coconut, shea nut, and bitter kola for global wholesale buyers."
+        path="/products"
+        keywords="export products, bulk agricultural products, wholesale farm produce, cashew nuts wholesale, cocoa beans supply"
+      />
       <section className="products hero-section d-flex align-items-center position-relative">
         <div className="container">
           <div className="hero-content position-relative text-center text-white">

@@ -7,6 +7,16 @@ import MoreImagesCarousel from "../components/MoreImagesCarousel";
 import QuoteForm from "../components/QuoteForm";
 import api from "../api/api";
 import { selectRelatedProducts } from "../utils/productSelection";
+import Seo from "../components/Seo";
+
+const toMetaDescription = (product) => {
+  const text = product?.description || product?.longDescription || "";
+  if (!text) {
+    return "View detailed specifications, packaging, certifications, and export availability for this Flexus agricultural product.";
+  }
+
+  return text.length > 155 ? `${text.slice(0, 152)}...` : text;
+};
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -58,6 +68,11 @@ const ProductDetails = () => {
   if (isLoading) {
     return (
       <main className="m-0 p-0 product-details-page">
+        <Seo
+          title="Product Details"
+          description="Explore detailed information about this export-grade agricultural product from Flexus Solutions."
+          path={`/products/${id}`}
+        />
         <ProductDetailsSkeleton />
       </main>
     );
@@ -69,6 +84,35 @@ const ProductDetails = () => {
 
   return (
     <main className="m-0 p-0 product-details-page">
+      <Seo
+        title={`${product.name} Export Product`}
+        description={toMetaDescription(product)}
+        path={`/products/${product.id || product._id || id}`}
+        image={product.image || "/images/flexus-icon.png"}
+        type="product"
+        keywords={`${product.name}, agricultural export product, bulk ${product.name}, ${product.origin || "Nigeria"} produce exporter`}
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: product.name,
+          description: product.longDescription || product.description,
+          image: product.image,
+          sku: product.id || product._id || id,
+          brand: {
+            "@type": "Brand",
+            name: "Flexus Solutions",
+          },
+          additionalProperty: [
+            { "@type": "PropertyValue", name: "Origin", value: product.origin },
+            { "@type": "PropertyValue", name: "Grade", value: product.grade },
+            {
+              "@type": "PropertyValue",
+              name: "Minimum Order",
+              value: product.minOrder,
+            },
+          ].filter((item) => item.value),
+        }}
+      />
       <section
         className="product-details-section py-5 bg-light"
         data-aos="fade-up"

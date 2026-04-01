@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import api from "../api/api";
 import "../styles/login.css";
+import Seo from "../components/Seo";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -100,6 +101,12 @@ const Login = () => {
 
   return (
     <main className="m-0 p-0">
+      <Seo
+        title="Admin Login"
+        description="Secure admin login for Flexus Solutions dashboard."
+        path="/admin/login"
+        noindex
+      />
       <section className="py-5 login-content-section position-relative">
         <div className="login-top-buttons">
           <button

@@ -1,8 +1,14 @@
 import { Link } from "react-router-dom";
+import Seo from "../components/Seo";
 
 const NotFound = () => {
   return (
     <main className="not-found-page">
+      <Seo
+        title="Page Not Found"
+        description="The page you requested could not be found. Explore Flexus export products or return to the homepage."
+        noindex
+      />
       <section className="not-found-section position-relative overflow-hidden">
         <div className="not-found-orb orb-one" aria-hidden="true"></div>
         <div className="not-found-orb orb-two" aria-hidden="true"></div>

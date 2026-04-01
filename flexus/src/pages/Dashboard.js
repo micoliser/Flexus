@@ -6,6 +6,7 @@ import ProductsPanel from "../components/admin/ProductsPanel";
 import UsersPanel from "../components/admin/UsersPanel";
 import LogsPanel from "../components/admin/LogsPanel";
 import "../styles/dashboard.css";
+import Seo from "../components/Seo";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -44,6 +45,12 @@ const Dashboard = () => {
 
   return (
     <main className="admin-dashboard-shell">
+      <Seo
+        title="Admin Dashboard"
+        description="Flexus Solutions internal operations dashboard."
+        path="/admin/dashboard"
+        noindex
+      />
       <aside className="admin-sidebar">
         <div className="admin-brand-block">
           <div className="admin-brand-row">

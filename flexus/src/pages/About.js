@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { teamMembers } from "../data/teamMembers";
 import TeamCard from "../components/TeamCard";
+import Seo from "../components/Seo";
 
 const About = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -29,6 +30,12 @@ const About = () => {
 
   return (
     <main className="m-0 p-0">
+      <Seo
+        title="About Flexus Solutions"
+        description="Learn about Flexus Solutions, a trusted agricultural export partner committed to quality, integrity, sustainability, and long-term partnerships with farmers and global buyers."
+        path="/about"
+        keywords="about flexus solutions, agricultural export company, sustainable agriculture exports, Nigeria export company"
+      />
       {/* Hero Section */}
       <section className="about hero-section d-flex align-items-center position-relative">
         <div className="container">

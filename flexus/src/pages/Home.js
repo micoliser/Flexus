@@ -4,6 +4,7 @@ import ProductCardSkeletonGrid from "../components/ProductCardSkeletonGrid";
 import { Link } from "react-router-dom";
 import CardR from "../components/CardR";
 import api from "../api/api";
+import Seo from "../components/Seo";
 
 const Home = () => {
   const [homeProducts, setHomeProducts] = useState([]);
@@ -47,6 +48,32 @@ const Home = () => {
 
   return (
     <main className="m-0 p-0">
+      <Seo
+        title="Premium Agricultural Exports Worldwide"
+        description="Flexus Solutions exports premium agricultural products from Nigeria including cashew nuts, cocoa beans, ginger, turmeric, coconut, and corn with strict quality control and reliable global shipping."
+        path="/"
+        keywords="agricultural exports, Nigeria produce exporter, cashew nuts exporter, cocoa beans exporter, ginger exporter, corn exporter"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Flexus Solutions",
+          url: "https://www.flexussolutions.com",
+          logo: "https://www.flexussolutions.com/images/flexus-icon.png",
+          email: "info@flexussolutions.com",
+          telephone: "+234701234567",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress:
+              "4th Floor, Right Wing, Mulliner Towers, Plot 39 Alfred Rewane Road, Ikoyi",
+            addressLocality: "Lagos",
+            addressCountry: "NG",
+          },
+          sameAs: [
+            "https://www.flexussolutions.com",
+            "https://wa.me/2347012345670",
+          ],
+        }}
+      />
       <section className="home hero-section d-flex align-items-center position-relative">
         <div className="container">
           <div className="hero-content position-relative text-center text-white">
