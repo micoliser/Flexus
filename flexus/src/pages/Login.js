@@ -89,7 +89,6 @@ const Login = () => {
         navigate("/admin/dashboard");
       }, 500);
     } catch (error) {
-      console.error("Login error:", error);
       const errorMessage =
         error.response?.data?.message || "Failed to login. Please try again.";
       setLoginError(errorMessage);

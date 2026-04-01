@@ -140,7 +140,6 @@ const QuoteForm = ({ isOpen, productName, onClose }) => {
         );
       }
     } catch (error) {
-      console.error("Error submitting quote request:", error);
       toast.error(
         error.response?.data?.message ||
           "An error occurred while submitting your request. Please try again later.",

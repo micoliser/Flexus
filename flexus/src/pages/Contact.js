@@ -47,7 +47,6 @@ const Contact = () => {
       await api.post("/email/contact", formData);
       return { success: true };
     } catch (error) {
-      console.error("Email Error:", error);
       return {
         success: false,
         error: error.response?.data?.message || error.message,
