@@ -1,12 +1,42 @@
 # Flexus E-Commerce Platform
 
+![Flexus Solutions](https://img.shields.io/badge/Flexus-Solutions-blue?style=for-the-badge)
+![Node.js](https://img.shields.io/badge/Node.js-18+-green?style=flat-square&logo=node.js)
+![React](https://img.shields.io/badge/React-19-blue?style=flat-square&logo=react)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green?style=flat-square&logo=mongodb)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
+
 ## Overview
 
-Flexus is a full-stack e-commerce/admin dashboard platform built with:
+Flexus is a robust, full-stack B2B e-commerce platform specifically designed for agricultural commodity exports. It provides a comprehensive product showcase featuring detailed agricultural specifications (e.g., moisture, grade, shelf life, export markets, packaging) and includes a secure administrative dashboard for staff and administrators to manage the catalog, drafts, and user roles.
 
-- **Backend:** Node.js, Express, MongoDB (Mongoose)
-- **Frontend:** React (with Context API), Axios
-- **Security:** Cookie-based authentication with JWT access/refresh tokens, rate limiting, CORS allowlist, Helmet
+## Core Features
+
+- **Specialized B2B Product Catalog:** Tailored schema for agricultural exports (origin, certifications, minimum orders).
+- **Draft & Publishing Workflow:** Staff can create product drafts and toggle visibility (publish/unpublish) to control the live catalog.
+- **Role-Based Access Control (RBAC):** Distinct roles for `Users`, `Staff`, and `Admin`, with restricted routes and data access.
+- **High-Security Authentication:**
+  - Secure, `HttpOnly` cookie-based sessions.
+  - Short-lived JWT access tokens with long-lived refresh tokens.
+  - Server-side session revocation and refresh token hashing.
+  - Rate limiting against brute-force login attempts.
+- **Cloud Media Management:** Direct AWS S3 integration via presigned URLs for secure product image uploads.
+
+---
+
+## Tech Stack & Architecture
+
+### Frontend (`flexus/`)
+- **Framework:** React 19, React Router v7
+- **Data Fetching:** Axios (with interceptors for token refresh)
+- **Styling & UI:** Custom CSS, Bootstrap Icons, AOS (Animate on Scroll)
+- **State Management:** React Context API (AuthContext, ThemeContext)
+
+### Backend (`api/`)
+- **Server:** Node.js, Express 5
+- **Database:** MongoDB, Mongoose (Models: User, Product, Log)
+- **Security & Middleware:** Helmet, CORS, Cookie Parser, bcryptjs, jsonwebtoken, express-rate-limit
+- **Services:** AWS S3 (S3Client, Pre-signed URLs), Nodemailer (Email integration)
 
 ---
 
@@ -14,151 +44,156 @@ Flexus is a full-stack e-commerce/admin dashboard platform built with:
 
 ```
 Flexus/
-├── api/           # Backend (Express API)
-│   ├── config/    # DB, mailgun config
-│   ├── controllers/  # Route handlers (auth, products, logs, etc.)
-│   ├── middleware/   # Security, error handling, auth guards
-│   ├── models/       # Mongoose schemas (User, Product, Log)
-│   ├── routes/       # Express routers
-│   ├── scripts/      # Utility scripts (e.g., resetDb.js)
-│   ├── services/     # Business logic (email, logs)
-│   ├── src/          # Express app entrypoint
-│   ├── utils/        # Mongoose plugins, helpers
-│   ├── package.json  # Backend dependencies
-│   └── .env          # Backend environment variables
+├── api/                  # Backend Express Server
+│   ├── config/           # Database and third-party integrations config
+│   ├── controllers/      # Route handlers for auth, products, users, logs
+│   ├── middleware/       # Security limits, roleGuards, auth verification
+│   ├── models/           # Mongoose schemas (User, Product, Log)
+│   ├── routes/           # Express router endpoints
+│   ├── scripts/          # Utility scripts (db reset, seed drafts)
+│   ├── services/         # Encapsulated business logic (AWS S3, Nodemailer)
+│   ├── src/              # App entrypoint (index.js)
+│   └── utils/            # Shared utilities and helpers
 │
-├── flexus/        # Frontend (React)
-│   ├── public/    # Static assets
-│   ├── src/       # React source code
-│   │   ├── api/   # Axios instance
-│   │   ├── components/ # UI components
-│   │   ├── context/    # React Context (Auth, Theme)
-│   │   ├── data/       # Static data
-│   │   ├── images/     # Images
-│   │   ├── pages/      # Route pages
-│   │   └── styles/     # CSS
-│   ├── package.json    # Frontend dependencies
-│   └── .env            # Frontend environment variables
+├── flexus/               # Frontend React Application
+│   ├── public/           # Static HTML, icons, manifest
+│   └── src/
+│       ├── api/          # Axios instance and interceptor configuration
+│       ├── components/   # Reusable UI components
+│       ├── context/      # React Context providers
+│       ├── pages/        # Application routes and views
+│       └── styles/       # Global CSS and module styles
 │
-└── README.md      # Project documentation
+└── deploy.sh             # Interactive production deployment script
 ```
 
 ---
 
-## Prerequisites
+## Getting Started
 
-- Node.js (v18+ recommended)
-- npm (v9+ recommended)
-- MongoDB (local or Atlas)
+### Prerequisites
+- **Node.js**: v18 or higher recommended
+- **npm**: v9 or higher
+- **Database**: MongoDB (Local instance or MongoDB Atlas cluster)
+- **Cloud Storage**: AWS S3 Bucket (for image uploads)
 
----
-
-## Backend Setup (`api/`)
+### 1. Backend Setup (`api/`)
 
 1. **Install dependencies:**
-
    ```bash
    cd api
    npm install
    ```
 
-2. **Configure environment variables:**
-   - Copy `.env.example` to `.env` (if present) or edit `.env` directly.
-   - Required variables:
-     - `MONGODB_URI` (MongoDB connection string)
-     - `JWT_SECRET` (random string)
-     - `REFRESH_TOKEN_SECRET` (random string, different from JWT_SECRET)
-     - `JWT_EXPIRES_IN` (e.g., `15m`)
-     - `REFRESH_TOKEN_EXPIRES_IN` (e.g., `7d`)
-     - `COOKIE_SECURE` (`false` for local dev, `true` for production/HTTPS)
-     - `COOKIE_SAME_SITE` (`lax` for dev, `strict` for prod)
-     - `API_VERSION` (default: `v1`)
-     - `PORT` (default: `5000`)
-     - SMTP/mailgun/AWS vars as needed
-
-3. **Run the backend server:**
-
-   ```bash
-   npm run dev
-   # or
-   npm start
+2. **Environment Variables (`api/.env`):**
+   Create a `.env` file in the `api/` directory with the following configuration:
+   ```env
+   # Core Config
+   PORT=5000
+   API_VERSION=v1
+   
+   # Database
+   MONGODB_URI=mongodb://localhost:27017/flexus_dev
+   
+   # Security & Auth
+   JWT_SECRET=your_super_secret_jwt_string
+   REFRESH_TOKEN_SECRET=your_super_secret_refresh_string
+   JWT_EXPIRES_IN=15m
+   REFRESH_TOKEN_EXPIRES_IN=7d
+   COOKIE_SECURE=false # Set to true in production (requires HTTPS)
+   COOKIE_SAME_SITE=lax # Set to strict in production
+   
+   # Cloud Storage (AWS S3)
+   AWS_REGION=your_aws_region
+   AWS_ACCESS_KEY_ID=your_access_key
+   AWS_SECRET_ACCESS_KEY=your_secret_key
+   AWS_S3_BUCKET_NAME=your_bucket_name
    ```
 
-   - Server runs at `http://localhost:5000` by default
+3. **Run the API server:**
+   ```bash
+   npm run dev
+   # The server will start on http://localhost:5000
+   ```
 
----
-
-## Frontend Setup (`flexus/`)
+### 2. Frontend Setup (`flexus/`)
 
 1. **Install dependencies:**
-
    ```bash
    cd flexus
    npm install
    ```
 
-2. **Configure environment variables:**
-   - Edit `.env` (see `.env.example` if present)
-   - Required variables:
-     - `REACT_APP_API_ADDRESS` (e.g., `http://localhost:5000`)
-     - `REACT_APP_API_VERSION` (e.g., `v1`)
-
-3. **Run the frontend dev server:**
-
-   ```bash
-   npm start
+2. **Environment Variables (`flexus/.env`):**
+   Create a `.env` file in the `flexus/` directory:
+   ```env
+   REACT_APP_API_ADDRESS=http://localhost:5000
+   REACT_APP_API_VERSION=v1
    ```
 
-   - Runs at `http://localhost:3000` (or another port)
+3. **Run the React application:**
+   ```bash
+   npm start
+   # The app will start on http://localhost:3000
+   ```
 
 ---
 
-## Authentication Flow
+## Deployment
 
-- Uses **httpOnly cookies** for access and refresh tokens (no tokens in localStorage)
-- Auto-refreshes tokens on expiry (silent refresh)
-- Logout revokes refresh session server-side
-- Secure by default: XSS-resistant, CSRF-protected, session rotation
+The project includes an interactive deployment script (`deploy.sh`) to automate moving the application to the production server.
 
----
+**Note:** Ensure your server is properly configured to accept SSH connections, and the destination paths (`public_html/` and `~/api`) exist.
 
-## Key Dependencies
+1. **Run the deployment script from the root directory:**
+   ```bash
+   ./deploy.sh
+   ```
 
-### Backend
-
-- express, mongoose, bcryptjs, jsonwebtoken, cookie-parser
-- helmet, cors, express-rate-limit
-- nodemailer, dotenv
-
-### Frontend
-
-- react, react-router-dom, axios
-- react-toastify, aos
+2. **Select your deployment target:**
+   - `0`: Deploy both Frontend and API
+   - `1`: Deploy Frontend only (Builds React, SCPs to `public_html/`)
+   - `2`: Deploy API only (Zips backend, SCPs to remote, unzips, installs deps, restarts node)
 
 ---
 
-## Useful Scripts
+## API Documentation Overview
 
-- **Reset DB:** `node scripts/resetDb.js` (in `api/`)
+The API is mounted at `/api/v1` (based on `API_VERSION`). Key endpoint groups include:
+
+- **Auth** (`/auth`): `/login`, `/refresh`, `/logout`, `/me`
+- **Users** (`/users`): Protected admin routes for user management (`/`, `/:id/disable`)
+- **Products** (`/products`): 
+  - Public routes: `/` (getAll), `/:id` (getById)
+  - Protected routes (Staff/Admin): `/draft`, `/upload-url` (S3 presigned URLs), `/:id/publish`, `/:id/unpublish`
+- **Logs** (`/logs`): System and activity monitoring endpoints.
+- **Email** (`/email`): Contact form and notification handlers.
+
+---
+
+## Useful Tooling & Scripts
+
+Navigate to the `api/` directory to run these administrative scripts:
+
+- **Database Reset:** Completely wipes the local database (Use with caution!)
+  ```bash
+  npm run db:reset
+  ```
+- **Seed Products:** Populates the database with initial draft product data for testing.
+  ```bash
+  npm run db:seed:draft-products
+  ```
 
 ---
 
 ## Troubleshooting
 
-- **CORS errors:** Ensure frontend origin is allowed in backend CORS config and `.env`
-- **Cookie issues:** For local dev, set `COOKIE_SECURE=false` in backend `.env`
-- **MongoDB connection:** Check `MONGODB_URI` and that MongoDB is running
-
----
-
-## Security Notes
-
-- Never commit `.env` files or secrets to version control
-- Use strong, unique secrets for JWT and refresh tokens
-- In production, always use HTTPS and set `COOKIE_SECURE=true`
+- **CORS Issues:** If the frontend cannot communicate with the backend, verify that the frontend URL is allowed in the backend's CORS configuration.
+- **Authentication Failing on Localhost:** Ensure `COOKIE_SECURE=false` in your backend `.env`. Browsers will block secure cookies over plain HTTP.
+- **Image Uploads Failing:** Verify your AWS IAM user permissions and ensure the S3 bucket CORS policy allows `PUT` requests from your frontend origin.
 
 ---
 
 ## License
 
-MIT
+This project is licensed under the MIT License.
